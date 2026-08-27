@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#5c0f26">
+<title>Meico Vinos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vino:#8a1538; --vino-deep:#5c0f26; --vino-grad:linear-gradient(140deg,#b23a56 0%,#8a1538 55%,#4a0e22 100%);
+    --vino-light:#c65170; --vino-soft:#f7e8ec; --bg:#fdf6f5; --surface:#fff;
+    --ink:#3a1017; --ink-soft:#8a5d63; --muted:#c9a3ab; --line:#f6e9ea; --line-strong:#eed0d3;
+    --success:#18a957; --success-soft:#e4f7ec; --error:#e23b4e; --error-soft:#fdecee; --warn:#d98a13; --warn-soft:#fdf3e2;
+    --r-xl:26px; --r-lg:20px; --r-md:14px; --r-sm:11px;
+    --sh-card:0 16px 40px -18px rgba(138,21,56,.28); --sh-soft:0 6px 18px -10px rgba(138,21,56,.4); --sh-pop:0 18px 44px -10px rgba(92,15,38,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:120px}
+  h1,h2,h3{font-family:'Poppins',sans-serif}
+  .icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+  svg{pointer-events:none}
+  button,.btn,.nav-icon,.fab,.opt label,.upload,.modgrid-item{touch-action:manipulation}
+  .icon-lg{width:22px;height:22px}.icon-sm{width:15px;height:15px}.icon-xl{width:30px;height:30px}
+
+  /* TOPBAR */
+  .topbar{background:var(--vino-grad);color:#fff;padding:20px 20px 26px;border-radius:0 0 28px 28px;position:sticky;top:0;z-index:40;overflow:hidden}
+  .topbar::before{content:'';position:absolute;top:-50px;right:-30px;width:150px;height:150px;background:rgba(255,255,255,.08);border-radius:50%}
+  .topbar-row{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px;position:relative;z-index:1}
+  .topbar-logo{width:40px;height:40px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center}
+  .topbar-brand{flex:1}.topbar-brand b{font-family:'Poppins';font-weight:600;font-size:16px;display:block}.topbar-brand span{font-size:12px;opacity:.8}
+  .greet{max-width:720px;margin:16px auto 0;position:relative;z-index:1}
+  .greet h1{font-size:20px;font-weight:700}.greet p{font-size:12.5px;opacity:.82;margin-top:2px}
+
+  /* STAGE */
+  .stage{max-width:720px;margin:-14px auto 0;padding:0 16px;position:relative;z-index:2}
+  .mod{display:none;animation:fadeIn .32s ease}.mod.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .card{background:var(--surface);border-radius:var(--r-xl);padding:22px;box-shadow:var(--sh-card)}
+  .card-head{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+  .card-chip{width:46px;height:46px;background:var(--vino-soft);color:var(--vino);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .card-head-text{flex:1;min-width:0}.card-title{font-family:'Poppins';font-size:16px;font-weight:600}.card-sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .saved-badge{display:none;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--success);background:var(--success-soft);padding:5px 9px;border-radius:20px}
+  .saved-badge.on{display:inline-flex}
+  .lock-note{display:flex;align-items:center;gap:9px;padding:11px 13px;background:var(--warn-soft);color:#8a5a0d;border-radius:var(--r-md);font-size:12.5px;margin-bottom:16px}
+
+  /* FIELDS */
+  .field{margin-bottom:15px}.field:last-child{margin-bottom:0}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:7px}
+  .label-req::after{content:'*';color:var(--error);margin-left:3px}
+  .input,.select,.textarea{width:100%;padding:13px 15px;border:1.5px solid var(--line-strong);border-radius:var(--r-md);background:#fffbfb;font-family:inherit;font-size:15px;color:var(--ink);transition:all .15s ease;min-height:48px}
+  .input::placeholder,.textarea::placeholder{color:var(--muted)}
+  .input:hover,.select:hover,.textarea:hover{border-color:#e0b0b8}
+  .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--vino-light);background:#fff;box-shadow:0 0 0 4px rgba(198,81,112,.14)}
+  .select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%238a1538' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+  .select:disabled{background-color:#f6eeee;color:var(--muted);cursor:not-allowed}
+  .textarea{min-height:82px;resize:vertical}
+
+  /* OPTIONS */
+  .opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:9px}.opt-grid-2{grid-template-columns:repeat(2,1fr)}
+  .opt{position:relative}.opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt label{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;background:#fffbfb;border:1.5px solid var(--line-strong);border-radius:var(--r-md);cursor:pointer;font-size:14px;font-weight:600;color:var(--ink-soft);transition:all .15s ease;text-align:center;min-height:50px}
+  .opt label:hover{border-color:var(--vino-light);color:var(--vino)}
+  .opt input:checked+label{background:var(--vino);border-color:var(--vino);color:#fff;box-shadow:var(--sh-soft)}
+  .opt .chk{display:none}.opt input:checked+label .chk{display:inline-flex}
+
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border:1.5px solid transparent;border-radius:var(--r-md);font-family:'Poppins',sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;transition:all .15s ease;min-height:48px;white-space:nowrap}
+  .btn-primary{background:var(--vino);color:#fff;box-shadow:var(--sh-soft)}.btn-primary:hover:not(:disabled){background:var(--vino-deep)}
+  .btn-soft{background:var(--vino-soft);color:var(--vino)}.btn-soft:hover{background:#f1d3da}
+  .btn-outline{background:#fff;color:var(--ink);border-color:var(--line-strong)}
+  .btn-success{background:var(--success);color:#fff}.btn-success:hover{background:#13954b}
+  .btn-danger{background:transparent;color:var(--error);border-color:var(--line-strong)}.btn-danger:hover{background:var(--error-soft);border-color:var(--error)}
+  .btn-block{width:100%}.btn-sm{padding:8px 13px;font-size:13px;min-height:38px}.btn-icon{padding:8px;min-height:38px;width:38px}
+  .save-row{margin-top:20px;padding-top:18px;border-top:1px dashed var(--line-strong)}
+
+  /* ALERTS */
+  .alert{display:flex;align-items:flex-start;gap:11px;padding:14px;border-radius:var(--r-md);font-size:13px;margin-bottom:16px;border:1.5px solid}
+  .alert-error{background:var(--error-soft);color:var(--error);border-color:#f6c7cd}
+  .alert-actions{margin-top:9px;display:flex;gap:8px}
+  .shake{animation:shake .4s}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* GPS LOCATION */
+  .loc-box{border:1.5px solid var(--line-strong);border-radius:var(--r-md);padding:15px;background:#fffbfb;transition:.2s}
+  .loc-box.ok{border-color:var(--success);background:var(--success-soft)}
+  .loc-top{display:flex;align-items:center;gap:12px}
+  .loc-ic{width:42px;height:42px;border-radius:50%;background:var(--vino-soft);color:var(--vino);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .loc-box.ok .loc-ic{background:#fff;color:var(--success)}
+  .loc-info{flex:1;min-width:0}.loc-info b{font-size:14px;font-family:'Poppins'}.loc-info span{display:block;font-size:12px;color:var(--ink-soft);margin-top:1px}
+  .loc-coords{margin-top:12px;font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .loc-coords a{color:var(--vino);font-weight:600;text-decoration:none}
+
+  /* LIST ITEMS */
+  .item{background:#fffbfb;border:1.5px solid var(--line);border-radius:var(--r-lg);padding:15px;margin-bottom:11px}
+  .item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+  .item-title{font-family:'Poppins';font-size:13px;font-weight:600;color:var(--vino);display:flex;align-items:center;gap:8px}
+  .empty-hint{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 14px}
+
+  /* UPLOAD */
+  .upload{position:relative;border:2px dashed var(--line-strong);border-radius:var(--r-lg);padding:24px 16px;text-align:center;cursor:pointer;transition:all .15s;background:#fffbfb}
+  .upload:hover{border-color:var(--vino-light);background:var(--vino-soft)}
+  .upload.has{padding:12px;border-style:solid;border-color:var(--success);background:var(--success-soft)}
+  .upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .upload-ic{width:44px;height:44px;background:var(--vino-soft);color:var(--vino);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
+  .upload-t{font-size:13.5px;font-weight:600}.upload-h{font-size:12px;color:var(--muted);margin-top:2px}
+  .preview-img{max-width:100%;max-height:220px;border-radius:var(--r-md);display:block;margin:0 auto}
+  .preview-act{display:flex;gap:8px;margin-top:11px;justify-content:center}
+
+  /* SUMMARY */
+  .mod-state{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1.5px solid var(--line);border-radius:var(--r-md);margin-bottom:8px}
+  .mod-state .ms-ic{width:32px;height:32px;border-radius:9px;background:var(--vino-soft);color:var(--vino);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .mod-state .ms-name{flex:1;font-weight:600;font-size:14px}
+  .ms-tag{font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px}
+  .ms-tag.ok{background:var(--success-soft);color:var(--success)}.ms-tag.no{background:#f1eef0;color:var(--muted)}
+  .res-sec{margin-bottom:16px}
+  .res-sec-h{display:flex;align-items:center;gap:8px;font-family:'Poppins';font-size:13px;font-weight:600;color:var(--vino);margin-bottom:9px}
+  .res-line{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .res-line:last-child{border:none}.res-line .rk{color:var(--ink-soft)}.res-line .rv{font-weight:600;text-align:right;word-break:break-word}
+  .res-mini{font-size:12.5px;color:var(--ink-soft);padding:5px 0}
+  .res-mini b{color:var(--ink)}
+
+  /* BOTTOM NAV + MODULE SHEET */
+  .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:12px 18px;padding-bottom:max(12px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .nav-side{flex:1;display:flex}.nav-side.right{justify-content:flex-end}
+  .fab-slot{position:relative;width:64px;flex-shrink:0}
+  .fab{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:62px;height:62px;border-radius:50%;border:4px solid var(--bg);background:var(--vino-grad);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -6px rgba(138,21,56,.6);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+  .fab:hover{transform:translateX(-50%) scale(1.05)}
+  .fab .fab-ic{transition:transform .35s ease}.fab.spin .fab-ic{transform:rotate(135deg)}
+
+  .modgrid-bd{position:fixed;inset:0;background:rgba(58,16,23,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:58}
+  .modgrid-bd.open{opacity:1;pointer-events:auto}
+  .modgrid{position:fixed;left:0;right:0;bottom:0;z-index:62;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px max(20px,env(safe-area-inset-bottom));max-width:720px;margin:0 auto;box-shadow:0 -10px 40px -10px rgba(0,0,0,.3);transform:translateY(105%);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+  .modgrid.open{transform:translateY(0)}
+  .modgrid-h{font-family:'Poppins';font-weight:600;font-size:15px;margin-bottom:14px;text-align:center;color:var(--ink)}
+  .modgrid-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .modgrid-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;border:1.5px solid var(--line);background:#fffbfb;cursor:pointer;border-style:solid}
+  .modgrid-item.active{border-color:var(--vino);background:var(--vino-soft)}
+  .modgrid-item.locked{opacity:.42;cursor:not-allowed}
+  .modgrid-ic{width:38px;height:38px;border-radius:50%;background:var(--vino-soft);color:var(--vino);display:flex;align-items:center;justify-content:center}
+  .modgrid-item.active .modgrid-ic{background:var(--vino);color:#fff}
+  .modgrid-lbl{font-size:10.5px;font-weight:600;text-align:center;line-height:1.15;color:var(--ink-soft)}
+  .modgrid-item.active .modgrid-lbl{color:var(--vino)}
+  .modgrid-check{position:absolute;top:5px;right:5px;width:16px;height:16px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center}
+  .modgrid-check svg{width:10px;height:10px}
+
+  /* TOAST */
+  .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--r-md);font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:9px;box-shadow:var(--sh-pop);opacity:0;pointer-events:none;transition:all .3s;z-index:9998}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .icon{color:#7ef0c0}
+  .toast.warn .icon{color:#ffd27a}
+
+  /* OVERLAYS */
+  .overlay{position:fixed;inset:0;background:rgba(58,16,23,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}.overlay.show{display:flex}
+  .modal{background:#fff;border-radius:var(--r-xl);padding:30px 26px;max-width:380px;width:100%;text-align:center;box-shadow:var(--sh-pop);position:relative}
+  .spinner{width:40px;height:40px;border:3.5px solid var(--vino-soft);border-top-color:var(--vino);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}@keyframes spin{to{transform:rotate(360deg)}}
+  .modal-msg{font-size:14px;color:var(--ink-soft);font-weight:500}
+  .ok-ic{width:68px;height:68px;background:var(--success-soft);color:var(--success);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:18px}
+  .ok-title{font-family:'Poppins';font-size:19px;font-weight:700;margin-bottom:6px}.ok-sub{font-size:14px;color:var(--ink-soft);margin-bottom:20px}
+  .ok-info{background:var(--bg);border-radius:var(--r-md);padding:12px 14px;margin-bottom:20px;font-size:12px;color:var(--ink-soft);text-align:left;word-break:break-all;white-space:pre-line}
+  @media(max-width:480px){.field-row{grid-template-columns:1fr}.card{padding:18px}.modgrid-grid{grid-template-columns:repeat(4,1fr);gap:8px}}
+
+  /* PORTADA */
+  .portada{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;overflow:hidden;background:#4a0e22;transition:transform .6s cubic-bezier(.7,0,.25,1),opacity .55s ease}
+  .portada.hide{transform:translateY(-101%);opacity:0;pointer-events:none}
+  .portada-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+  .portada-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;padding:max(38px,env(safe-area-inset-top)) 26px max(30px,env(safe-area-inset-bottom));max-width:460px;width:100%;margin:0 auto}
+  .portada-brand{display:inline-flex;align-items:center;gap:8px;color:#fff;font-family:'Poppins';font-weight:600;font-size:12px;letter-spacing:2px;opacity:.92;text-transform:uppercase}
+  .portada-hero{margin-top:30px}
+  .portada-hero h1{color:#fff;font-size:38px;font-weight:700;line-height:1.04;text-shadow:0 2px 20px rgba(30,5,15,.3)}
+  .portada-hero p{color:rgba(255,255,255,.9);font-size:15px;margin-top:9px;max-width:280px;text-shadow:0 1px 10px rgba(30,5,15,.25)}
+  .portada-form{margin-top:auto}
+  .portada-err{display:none;color:#fff;background:rgba(226,59,78,.9);border-radius:13px;padding:11px 15px;font-size:13px;margin-bottom:13px;text-align:center;font-weight:500}
+  .pinput{position:relative;margin-bottom:13px}
+  .pinput .pic{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.85);display:flex}
+  .pinput input{width:100%;padding:17px 18px 17px 50px;border-radius:30px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-family:inherit;font-size:15px;transition:.2s}
+  .pinput input::placeholder{color:rgba(255,255,255,.72)}
+  .pinput input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.24);box-shadow:0 0 0 4px rgba(255,255,255,.14)}
+  .pselect{position:relative;margin-bottom:13px}
+  .pselect .pic{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.85);display:flex;pointer-events:none;z-index:1}
+  .pselect select{width:100%;padding:17px 44px 17px 50px;border-radius:30px;border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;font-family:inherit;font-size:15px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center}
+  .pselect select:focus{outline:none;border-color:#fff;background-color:rgba(255,255,255,.24);box-shadow:0 0 0 4px rgba(255,255,255,.14)}
+  .pselect select option{color:#3a1017}
+  .asesor-chip{display:none;align-items:center;gap:10px;padding:11px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:12.5px;margin:-4px 0 13px;backdrop-filter:blur(6px)}
+  .asesor-chip.show{display:flex}
+  .btn-portada{width:100%;margin-top:6px;padding:17px;border:none;border-radius:30px;background:#fff;color:var(--vino-deep);font-family:'Poppins';font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 16px 34px -12px rgba(30,5,15,.55);transition:transform .2s,box-shadow .2s}
+  .btn-portada:hover{transform:translateY(-2px);box-shadow:0 20px 40px -12px rgba(30,5,15,.6)}
+  .btn-portada:active{transform:translateY(0)}
+  .portada-foot{margin-top:18px;text-align:center;color:rgba(255,255,255,.82);font-size:12px}
+  .petalfloat{animation:floaty 6s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translate(0,0);opacity:.35}50%{transform:translate(9px,-16px);opacity:.9}}
+
+  /* Chip asesor/PDV en módulo Ingreso */
+  .merc-chip{display:flex;align-items:center;gap:12px;padding:13px;border:1.5px solid var(--line-strong);border-radius:var(--r-md);background:var(--vino-soft);margin-bottom:16px}
+  .merc-ava{width:44px;height:44px;border-radius:50%;background:var(--vino-grad);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .merc-info{flex:1;min-width:0}.merc-info b{font-family:'Poppins';font-size:14.5px;display:block;color:var(--ink)}.merc-info span{font-size:12.5px;color:var(--ink-soft)}
+
+  /* AVATAR BURBUJA (topbar) */
+  .avatar-bubble{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.55);overflow:hidden;flex-shrink:0;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;transition:.15s}
+  .avatar-bubble:hover{border-color:#fff}
+  .progress-wrap{max-width:720px;margin:14px auto 0;position:relative;z-index:1}
+  .progress-wrap .step-pill{display:inline-block;margin-bottom:9px;font-family:'Poppins';font-size:12px;font-weight:600;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);padding:6px 12px;border-radius:20px}
+  .progress{max-width:720px;margin:0 auto;display:flex;gap:4px;position:relative;z-index:1}
+  .progress span{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.22);transition:background .3s}
+  .progress span.done{background:#7ef0c0}.progress span.cur{background:#fff}
+
+  /* NAV-ICON */
+  .nav-icon{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line-strong);background:#fff;color:var(--vino);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+  .nav-icon:hover{background:var(--vino-soft);border-color:var(--vino-light)}
+
+  /* MODAL PERSONA / RESUMEN */
+  .modal.left{text-align:left;max-width:400px}
+  .modal-h{font-family:'Poppins';font-size:18px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:9px}
+  .modal-p{font-size:13px;color:var(--ink-soft);margin-bottom:18px}
+  .modal-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;border:none;background:var(--bg);color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer}
+
+  /* VOZ DEL CONSUMIDOR: grupos de opciones con emoji */
+  .opt-grid.emoji-grid{grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:8px}
+  .opt-grid.emoji-grid .opt label{flex-direction:column;gap:4px;padding:10px 6px;min-height:66px}
+  .emoji-ic{font-size:23px;line-height:1}
+  .emoji-lbl{font-size:10px;font-weight:600;line-height:1.2}
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-wine" viewBox="0 0 24 24"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></symbol>
+  <symbol id="i-bottle" viewBox="0 0 24 24"><path d="M9 2h6"/><path d="M9 2v4.5c0 .8-.3 1.6-.9 2.2C7.4 9.4 7 10.9 7 12.5V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-7.5c0-1.6-.4-3.1-1.1-3.8-.6-.6-.9-1.4-.9-2.2V2"/><line x1="7" y1="13" x2="17" y2="13"/></symbol>
+  <symbol id="i-grape" viewBox="0 0 24 24"><path d="M12 2v4"/><circle cx="9" cy="9" r="2.2"/><circle cx="15" cy="9" r="2.2"/><circle cx="7" cy="14" r="2.2"/><circle cx="12" cy="14" r="2.2"/><circle cx="17" cy="14" r="2.2"/><circle cx="9" cy="19" r="2.2"/><circle cx="15" cy="19" r="2.2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-id" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.2"/><line x1="14" y1="10" x2="18" y2="10"/><line x1="14" y1="14" x2="18" y2="14"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></symbol>
+  <symbol id="i-arrowr" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+</svg>
+
+<!-- PORTADA / BIENVENIDA -->
+<div class="portada" id="portada">
+  <svg class="portada-bg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="skyVino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7a3b3"/><stop offset=".45" stop-color="#b23a56"/><stop offset="1" stop-color="#4a0e22"/></linearGradient>
+      <linearGradient id="h1Vino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c65170"/><stop offset="1" stop-color="#9c2a4a"/></linearGradient>
+      <linearGradient id="h2Vino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a1538"/><stop offset="1" stop-color="#6d0f2b"/></linearGradient>
+      <linearGradient id="h3Vino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c0f26"/><stop offset="1" stop-color="#3a0a1a"/></linearGradient>
+      <linearGradient id="fgVino" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2e0812"/><stop offset="1" stop-color="#1c0509"/></linearGradient>
+    </defs>
+    <rect width="390" height="844" fill="url(#skyVino)"/>
+    <circle cx="298" cy="150" r="60" fill="#fff4f6" opacity=".2"/>
+    <circle cx="298" cy="150" r="38" fill="#fff8f9" opacity=".3"/>
+    <g fill="#fff" opacity=".55">
+      <circle class="petalfloat" cx="60" cy="130" r="4"/>
+      <circle class="petalfloat" cx="100" cy="165" r="3" style="animation-delay:1.4s"/>
+      <circle class="petalfloat" cx="140" cy="105" r="3.5" style="animation-delay:2.6s"/>
+      <circle class="petalfloat" cx="205" cy="90" r="2.5" style="animation-delay:.8s"/>
+      <circle class="petalfloat" cx="165" cy="150" r="2.5" style="animation-delay:3.4s"/>
+    </g>
+    <path fill="url(#h1Vino)" d="M0 520 L70 432 L150 508 L232 420 L312 500 L390 442 L390 560 L0 560 Z"/>
+    <rect x="0" y="540" width="390" height="44" fill="#ffffff" opacity=".08"/>
+    <path fill="url(#h2Vino)" d="M0 602 L92 500 L182 590 L262 510 L342 580 L390 540 L390 668 L0 668 Z"/>
+    <rect x="0" y="632" width="390" height="44" fill="#ffffff" opacity=".06"/>
+    <path fill="url(#h3Vino)" d="M0 694 L82 600 L172 680 L252 612 L332 676 L390 632 L390 768 L0 768 Z"/>
+    <path fill="url(#fgVino)" d="M0 770 C60 750 120 782 182 763 C244 746 300 780 390 758 L390 844 L0 844 Z"/>
+    <g fill="#1c0509" opacity=".9">
+      <circle cx="40" cy="792" r="16"/><circle cx="58" cy="780" r="11"/><circle cx="24" cy="780" r="10"/>
+      <circle cx="120" cy="800" r="14"/><circle cx="136" cy="790" r="9"/>
+      <circle cx="220" cy="794" r="17"/><circle cx="238" cy="782" r="10"/><circle cx="204" cy="782" r="9"/>
+      <circle cx="310" cy="800" r="15"/><circle cx="328" cy="788" r="10"/><circle cx="294" cy="788" r="9"/>
+    </g>
+  </svg>
+  <div class="portada-content">
+    <div class="portada-brand"><svg class="icon icon-sm"><use href="#i-wine"/></svg> Meico Vinos</div>
+    <div class="portada-hero">
+      <h1>Hola de nuevo,</h1>
+      <p>Registra tu visita y activación en el punto de venta, paso a paso.</p>
+    </div>
+    <div class="portada-form" id="portadaForm">
+      <div class="portada-err" id="portadaErr">Selecciona tu nombre como asesor y el punto de venta.</div>
+
+      <div class="pselect"><span class="pic"><svg class="icon"><use href="#i-user"/></svg></span>
+        <select id="asesorNombre" onchange="onAsesorChange()"><option value="">Selecciona tu nombre</option></select>
+      </div>
+      <div id="identManual" style="display:none">
+        <div class="pinput"><span class="pic"><svg class="icon"><use href="#i-user"/></svg></span><input type="text" id="asesorNombreTexto" placeholder="Nombre completo"></div>
+        <div class="pinput"><span class="pic"><svg class="icon"><use href="#i-id"/></svg></span><input type="tel" id="asesorDocumentoTexto" placeholder="Documento" inputmode="numeric"></div>
+        <div class="pinput"><span class="pic"><svg class="icon"><use href="#i-phone"/></svg></span><input type="tel" id="asesorTelefonoTexto" placeholder="Teléfono" inputmode="tel"></div>
+      </div>
+      <div class="asesor-chip" id="asesorChip"><svg class="icon icon-sm"><use href="#i-id"/></svg><span id="asesorChipTexto">—</span></div>
+
+      <div class="pselect"><span class="pic"><svg class="icon"><use href="#i-pin"/></svg></span>
+        <select id="puntoVenta" onchange="onPdvChange()"><option value="">Selecciona el punto de venta</option></select>
+      </div>
+      <input type="text" id="pdvTexto" class="input" placeholder="Escribe el punto de venta" style="display:none;margin-bottom:13px;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff">
+
+      <div id="alertParam" class="alert alert-error" style="display:none">
+        <svg class="icon"><use href="#i-alert"/></svg>
+        <div style="flex:1"><strong>No se pudieron cargar asesores y PDV.</strong>
+          <div id="alertParamMsg" style="margin-top:3px;font-size:12px;opacity:.9"></div>
+          <div style="margin-top:5px;font-size:12px">Puedes escribirlos manualmente.</div>
+          <div class="alert-actions"><button type="button" class="btn btn-danger btn-sm" onclick="cargarParametrizacion()"><svg class="icon icon-sm"><use href="#i-refresh"/></svg> Reintentar</button></div>
+        </div>
+      </div>
+
+      <button class="btn-portada" onclick="comenzar()">Comenzar <svg class="icon"><use href="#i-arrowr"/></svg></button>
+      <div class="portada-foot"><a href="#" onclick="event.preventDefault();abrirRecuperarSesion();" style="color:#fff;text-decoration:underline;font-weight:600">¿Ya tienes una gestión en curso? Recuperar sesión</a></div>
+      <div class="portada-foot">Una herramienta de <b style="font-weight:700;letter-spacing:.5px">SYNAPTIC</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-row">
+    <div class="topbar-logo"><svg class="icon icon-lg"><use href="#i-wine"/></svg></div>
+    <div class="topbar-brand"><b>Meico Vinos</b><span>Gestión comercial en el PDV</span></div>
+    <div class="avatar-bubble" id="avatarBubble" onclick="abrirPersona()" title="Mi información">
+      <svg class="icon icon-lg"><use href="#i-user"/></svg>
+    </div>
+  </div>
+  <div class="greet"><h1 id="heroGreet">Hola</h1><p id="heroDate"></p></div>
+  <div class="progress-wrap">
+    <span class="step-pill" id="stepPill">Ingreso</span>
+    <div class="progress" id="progress"></div>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+
+  <!-- INGRESO -->
+  <section class="mod active" data-mod="ingreso">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-pin"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Ingreso al PDV</div><div class="card-sub">Ubicación y foto de ingreso</div></div>
+        <span class="saved-badge" id="badge-ingreso"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="merc-chip">
+        <div class="merc-ava"><svg class="icon icon-lg"><use href="#i-user"/></svg></div>
+        <div class="merc-info"><b id="mercNombre">—</b><span id="mercDoc">—</span></div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="reabrirPortada()"><svg class="icon icon-sm"><use href="#i-edit"/></svg>Cambiar</button>
+      </div>
+      <div class="merc-chip">
+        <div class="merc-ava"><svg class="icon icon-lg"><use href="#i-pin"/></svg></div>
+        <div class="merc-info"><b id="mercPdv">—</b><span>Punto de venta</span></div>
+      </div>
+      <div class="field">
+        <label class="label label-req">Ubicación GPS</label>
+        <div class="loc-box" id="locBox">
+          <div class="loc-top">
+            <div class="loc-ic"><svg class="icon icon-lg"><use href="#i-nav"/></svg></div>
+            <div class="loc-info"><b id="locTitle">Ubicación no capturada</b><span id="locDesc">Toca el botón para registrar tu posición</span></div>
+          </div>
+          <div class="loc-coords" id="locCoords" style="display:none"></div>
+          <button type="button" class="btn btn-soft btn-block" style="margin-top:12px" id="btnGPS" onclick="capturarUbicacion()"><svg class="icon icon-sm"><use href="#i-refresh"/></svg>Actualizar ubicación</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="label label-req">Foto de ingreso (obligatoria)</label>
+        <div class="upload" id="uploadIngreso">
+          <input type="file" id="fileIngreso" accept="image/*" capture="environment">
+          <div id="defIngreso"><div class="upload-ic"><svg class="icon icon-lg"><use href="#i-camera"/></svg></div><div class="upload-t">Toma o sube la foto de ingreso</div><div class="upload-h">JPG, PNG · Sin foto no se puede continuar</div></div>
+          <div id="prevIngreso" style="display:none"><img id="imgIngreso" class="preview-img"><div class="preview-act"><button type="button" class="btn btn-outline btn-sm" onclick="event.stopPropagation();document.getElementById('fileIngreso').click()"><svg class="icon icon-sm"><use href="#i-upload"/></svg>Cambiar</button><button type="button" class="btn btn-danger btn-sm" onclick="event.stopPropagation();quitarFotoIngreso()"><svg class="icon icon-sm"><use href="#i-trash"/></svg>Quitar</button></div></div>
+        </div>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('ingreso')"><svg class="icon"><use href="#i-save"/></svg>Guardar Ingreso y desbloquear módulos</button></div>
+    </div>
+  </section>
+
+  <!-- VENTAS -->
+  <section class="mod" data-mod="ventas">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-cart"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Ventas</div><div class="card-sub">Vinos vendidos en la visita</div></div>
+        <span class="saved-badge" id="badge-ventas"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="field"><label class="label label-req">¿Se realizó venta?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="ventaRealizada" id="vrSi" value="Si"><label for="vrSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="ventaRealizada" id="vrNo" value="No"><label for="vrNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div id="ventaNo" style="display:none">
+        <div class="field"><label class="label label-req" for="ventaMotivoNo">Motivo de no venta</label>
+          <select id="ventaMotivoNo" class="select"><option value="">Seleccionar</option><option>Aún tiene inventario</option><option>Local cerrado</option><option>Falta dinero</option><option>Dueño no está</option><option>Otro</option></select>
+        </div>
+      </div>
+      <div id="ventaSi" style="display:none">
+        <div id="listaVentas"></div>
+        <button type="button" class="btn btn-soft btn-block" onclick="agregarVenta()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar vino vendido</button>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('ventas')"><svg class="icon"><use href="#i-save"/></svg>Guardar Ventas</button></div>
+    </div>
+  </section>
+
+  <!-- DEGUSTACIONES -->
+  <section class="mod" data-mod="degustaciones">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-wine"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Degustaciones</div><div class="card-sub">Muestras servidas en el PDV</div></div>
+        <span class="saved-badge" id="badge-degustaciones"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="field"><label class="label label-req">¿Se realizaron degustaciones?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="degustacionRealizada" id="drSi" value="Si"><label for="drSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="degustacionRealizada" id="drNo" value="No"><label for="drNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div id="degustacionNo" style="display:none">
+        <div class="field"><label class="label label-req" for="degustacionMotivoNo">Motivo de no degustación</label>
+          <select id="degustacionMotivoNo" class="select"><option value="">Seleccionar</option><option>Local cerrado</option><option>Sin insumos</option><option>Sin clientes en el punto</option><option>Otro</option></select>
+        </div>
+      </div>
+      <div id="degustacionSi" style="display:none">
+        <div id="listaDegustaciones"></div>
+        <button type="button" class="btn btn-soft btn-block" onclick="agregarDegustacion()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar degustación</button>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('degustaciones')"><svg class="icon"><use href="#i-save"/></svg>Guardar Degustaciones</button></div>
+    </div>
+  </section>
+
+  <!-- NOVEDADES PDV -->
+  <section class="mod" data-mod="novedades">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-alert"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Novedades del PDV</div><div class="card-sub">Competencia, degustaciones y descuentos</div></div>
+        <span class="saved-badge" id="badge-novedades"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="field"><label class="label label-req">¿Se observó alguna novedad en el punto?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="novedadObservada" id="noSi" value="Si"><label for="noSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="novedadObservada" id="noNo" value="No"><label for="noNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div id="novedadSi" style="display:none">
+        <div id="listaNovedades"></div>
+        <button type="button" class="btn btn-soft btn-block" onclick="agregarNovedad()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar novedad</button>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('novedades')"><svg class="icon"><use href="#i-save"/></svg>Guardar Novedades</button></div>
+    </div>
+  </section>
+
+  <!-- VOZ DEL CONSUMIDOR -->
+  <section class="mod" data-mod="voz">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-chat"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Voz del Consumidor</div><div class="card-sub">Preferencias y opiniones sobre los vinos</div></div>
+        <span class="saved-badge" id="badge-voz"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div id="listaVoz"></div>
+      <button type="button" class="btn btn-soft btn-block" onclick="agregarVoz()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar opinión</button>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('voz')"><svg class="icon"><use href="#i-save"/></svg>Guardar Voz del Consumidor</button></div>
+    </div>
+  </section>
+
+  <!-- OBSEQUIOS -->
+  <section class="mod" data-mod="obsequios">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-box"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Entrega de Obsequios</div><div class="card-sub">Descorchadores y otros obsequios</div></div>
+        <span class="saved-badge" id="badge-obsequios"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="field"><label class="label label-req">¿Se entregaron obsequios?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="obsequioEntregado" id="obSi" value="Si"><label for="obSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="obsequioEntregado" id="obNo" value="No"><label for="obNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div id="obsequioSi" style="display:none">
+        <div id="listaObsequios"></div>
+        <button type="button" class="btn btn-soft btn-block" onclick="agregarObsequio()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar obsequio</button>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('obsequios')"><svg class="icon"><use href="#i-save"/></svg>Guardar Obsequios</button></div>
+    </div>
+  </section>
+
+  <!-- ACTIVACIÓN DE BOTELLAS -->
+  <section class="mod" data-mod="activacion">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-bottle"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Activación de Botellas</div><div class="card-sub">2 botellas x punto: espumante y tinto</div></div>
+        <span class="saved-badge" id="badge-activacion"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
+      </div>
+      <div class="field"><label class="label label-req">¿Se entregó la botella espumante del punto?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="espumanteEntregada" id="esSi" value="Si"><label for="esSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="espumanteEntregada" id="esNo" value="No"><label for="esNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div class="field"><label class="label label-req">¿Se entregó la botella tinta del punto?</label>
+        <div class="opt-grid opt-grid-2">
+          <div class="opt"><input type="radio" name="tintoEntregada" id="tiSi" value="Si"><label for="tiSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
+          <div class="opt"><input type="radio" name="tintoEntregada" id="tiNo" value="No"><label for="tiNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
+        </div>
+      </div>
+      <div class="field"><label class="label label-req" for="impactos">Impactos generados (personas alcanzadas)</label>
+        <input type="number" id="impactos" class="input" min="0" placeholder="Ej: 25">
+      </div>
+      <div class="field" style="margin-bottom:0"><label class="label" for="observacionesActivacion">Observaciones de la activación</label>
+        <textarea id="observacionesActivacion" class="textarea" placeholder="Notas sobre la entrega de botellas o la activación"></textarea>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('activacion')"><svg class="icon"><use href="#i-save"/></svg>Guardar Activación</button></div>
+    </div>
+  </section>
+
+  <!-- SALIDA DEL PDV -->
+  <section class="mod" data-mod="salida">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-list"/></svg></div>
+        <div class="card-head-text"><div class="card-title">Salida del PDV</div><div class="card-sub">Revisa antes de finalizar</div></div>
+      </div>
+      <div id="resumenContenido"></div>
+      <div class="field" style="margin-top:8px"><label class="label" for="proximaVisita">Próxima visita programada</label><input type="date" id="proximaVisita" class="input"></div>
+      <div class="field"><label class="label" for="observacionesGenerales">Observaciones finales</label><textarea id="observacionesGenerales" class="textarea" placeholder="Compromisos y notas"></textarea></div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button type="button" class="btn btn-success" style="flex:1" onclick="compartirWhatsApp()"><svg class="icon"><use href="#i-chat"/></svg>WhatsApp</button>
+        <button type="button" class="btn btn-outline" style="flex:1" onclick="copiarGestion()"><svg class="icon"><use href="#i-copy"/></svg>Copiar</button>
+      </div>
+      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('salida', true)"><svg class="icon"><use href="#i-check"/></svg>Finalizar gestión</button></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- HOJA DE MÓDULOS -->
+<div class="modgrid-bd" id="modgridBd" onclick="closeModGrid()"></div>
+<div class="modgrid" id="modgrid">
+  <div class="modgrid-h">Módulos de la visita</div>
+  <div class="modgrid-grid" id="modgridGrid"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottomnav">
+  <div class="nav-side left"><button class="nav-icon" id="btnPersona" type="button" aria-label="Mi información"><svg class="icon"><use href="#i-user"/></svg></button></div>
+  <div class="fab-slot"><button class="fab" id="fab" type="button" aria-label="Navegar módulos"><span class="fab-ic"><svg class="icon icon-lg"><use href="#i-grid"/></svg></span></button></div>
+  <div class="nav-side right"></div>
+</nav>
+
+<!-- MODAL PERSONA -->
+<div class="overlay" id="personaModal">
+  <div class="modal left">
+    <button class="modal-close" onclick="cerrarPersona()"><svg class="icon icon-sm"><use href="#i-x"/></svg></button>
+    <div class="modal-h"><svg class="icon"><use href="#i-user"/></svg>Mi información</div>
+    <div class="modal-p">Datos del asesor y del punto de venta</div>
+    <div class="res-line"><span class="rk">Nombre</span><span class="rv" id="pNombre">—</span></div>
+    <div class="res-line"><span class="rk">Documento</span><span class="rv" id="pDoc">—</span></div>
+    <div class="res-line"><span class="rk">Teléfono</span><span class="rv" id="pTel">—</span></div>
+    <div class="merc-chip" style="margin:16px 0"><div class="merc-ava"><svg class="icon"><use href="#i-pin"/></svg></div><div class="merc-info"><b>Punto de venta</b><span id="pPdvActual">—</span></div><button type="button" class="btn btn-outline btn-sm" onclick="cerrarPersona();reabrirPortada()"><svg class="icon icon-sm"><use href="#i-edit"/></svg>Cambiar</button></div>
+    <div class="merc-chip" style="margin:0"><div class="merc-ava"><svg class="icon"><use href="#i-id"/></svg></div><div class="merc-info"><b>Código de sesión</b><span id="pCodigoSesion">—</span></div><button type="button" class="btn btn-outline btn-sm" onclick="copiarCodigoSesion()"><svg class="icon icon-sm"><use href="#i-copy"/></svg>Copiar</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><svg class="icon icon-sm"><use href="#i-check"/></svg><span id="toastMsg"></span></div>
+
+<!-- OVERLAYS -->
+<div class="overlay" id="loadingOverlay"><div class="modal"><div class="spinner"></div><div class="modal-msg" id="loadingMsg">Guardando...</div></div></div>
+<div class="overlay" id="successModal"><div class="modal">
+  <div class="ok-ic"><svg class="icon icon-xl"><use href="#i-check"/></svg></div>
+  <div class="ok-title">Gestión finalizada</div>
+  <div class="ok-sub">Toda la información quedó registrada.</div>
+  <div class="ok-info" id="successInfo"></div>
+  <button class="btn btn-primary btn-block" onclick="nuevaGestion()"><svg class="icon"><use href="#i-plus"/></svg>Nueva gestión</button>
+</div></div>
+
+<!-- CÓDIGO DE SESIÓN -->
+<div class="overlay" id="codigoSesionModal"><div class="modal">
+  <div class="ok-ic"><svg class="icon icon-xl"><use href="#i-id"/></svg></div>
+  <div class="ok-title">Guarda tu código de sesión</div>
+  <div class="ok-sub">Si sales de la app, cambias de dispositivo o se borran tus datos locales, lo necesitarás para recuperar esta gestión.</div>
+  <div class="ok-info" id="codigoSesionTexto" style="font-size:16px;font-weight:700;text-align:center;letter-spacing:.5px"></div>
+  <div style="display:flex;gap:10px">
+    <button type="button" class="btn btn-outline" style="flex:1" onclick="copiarCodigoSesion()"><svg class="icon icon-sm"><use href="#i-copy"/></svg>Copiar</button>
+    <button type="button" class="btn btn-primary" style="flex:1" onclick="cerrarCodigoSesion()">Entendido</button>
+  </div>
+</div></div>
+
+<!-- RECUPERAR SESIÓN -->
+<div class="overlay" id="recuperarModal"><div class="modal">
+  <div class="modal-h" style="justify-content:center"><svg class="icon"><use href="#i-refresh"/></svg>Recuperar sesión</div>
+  <div class="modal-p" style="text-align:center">Ingresa el código de sesión que recibiste al iniciar tu gestión.</div>
+  <div class="field"><input type="text" id="codigoRecuperar" class="input" placeholder="Ej: MVN-20260826-153000-123" style="text-align:center"></div>
+  <div id="recuperarErr" style="display:none;color:var(--error);font-size:12.5px;margin-bottom:10px;text-align:center"></div>
+  <div style="display:flex;gap:10px">
+    <button type="button" class="btn btn-outline" style="flex:1" onclick="cerrarRecuperarSesion()">Cancelar</button>
+    <button type="button" class="btn btn-primary" style="flex:1" onclick="confirmarRecuperarSesion()">Recuperar</button>
+  </div>
+</div></div>
+
+<script>
+/* ==== CONFIGURA ESTO DESPUÉS DE DESPLEGAR EL APPS SCRIPT (ver README) ==== */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzucn50Mn6oaxqixFrn39VY0vkxOUw1_LwQXWzvqnAb7DpisMjKCbKn3BcZ-oXJOISK2Q/exec';
+const LS_KEY = 'meicovinos_session_v1';
+const LS_FOTOS = 'meicovinos_fotos_v1';
+const SESION_MAX_MS = 6 * 60 * 60 * 1000;
+
+const MODS = [
+  {id:'ingreso',      icon:'i-pin',    label:'Ingreso',    gate:false},
+  {id:'ventas',       icon:'i-cart',   label:'Ventas',     gate:true},
+  {id:'degustaciones',icon:'i-wine',   label:'Degustac.',  gate:true},
+  {id:'novedades',    icon:'i-alert',  label:'Novedades',  gate:true},
+  {id:'voz',          icon:'i-chat',   label:'Voz Cons.',  gate:true},
+  {id:'obsequios',    icon:'i-box',    label:'Obsequios',  gate:true},
+  {id:'activacion',   icon:'i-bottle', label:'Activación', gate:true},
+  {id:'salida',       icon:'i-list',   label:'Salida',     gate:true}
+];
+
+// Voz del Consumidor: escalas y opciones con emoji (un toque, rápido de responder)
+const TIPO_VINO = [ {v:'Espumoso',e:'🍾'}, {v:'Burbujeante',e:'✨'}, {v:'Tinto',e:'🍷'}, {v:'Rosé',e:'🌹'} ];
+const CONOCE_MARCA = [ {v:'Sí, la conocía',e:'👀'}, {v:'No la conocía',e:'🆕'} ];
+const USO_MARCA = [ {v:'La toma actualmente',e:'🙋'}, {v:'La ha probado antes',e:'🕓'}, {v:'Nunca la ha probado',e:'🚫'} ];
+const OPINION_PRODUCTOS = [ {v:1,e:'😞',l:'Muy mala'}, {v:2,e:'🙁',l:'Mala'}, {v:3,e:'😐',l:'Regular'}, {v:4,e:'😊',l:'Buena'}, {v:5,e:'🤩',l:'Excelente'} ];
+const ATRIBUTOS_DESEADOS = [ {v:'Mejor sabor',e:'👅'}, {v:'Mejor precio',e:'💰'}, {v:'Maridaje / recomendaciones',e:'🍽️'}, {v:'Empaque / etiqueta',e:'📦'}, {v:'Promociones y combos',e:'🎁'} ];
+const PERCEPCION_DEGUSTACION = [ {v:'No le gustó',e:'🙁'}, {v:'Ni fu ni fa',e:'😐'}, {v:'Le gustó',e:'🙂'}, {v:'Le encantó',e:'🤩'} ];
+const EDADES = ['18-25','26-35','36-45','46-55','56+'];
+const TIPOS_NOVEDAD = ['Competencia','Degustación de la competencia','Descuento / Promoción','Otro'];
+const TIPOS_OBSEQUIO = ['Descorchador','Otro'];
+
+let parametrizacion = { pdvs:[], usuarios:[], skus:[], degustaciones:[] };
+let modoManual = false;
+let registroId = '';
+let saved = {};
+let current = 'ingreso';
+let modgridOpen = false, restaurando = false;
+let ubicacion = { lat:null, lng:null, acc:null };
+let fotoIngreso = '', fotoIngresoURL = '';
+let ventasList = [], degustacionesList = [], novedadesList = [], vozList = [], obsequiosList = [];
+let asesorSel = { nombre:'', documento:'', telefono:'' };
+let pendAsesorNombre = null, pendPDV = null;
+let registroPromise = null;
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  const ahora = new Date();
+  document.getElementById('heroDate').textContent = ahora.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+
+  cargarParametrizacion();
+
+  document.querySelectorAll('input[name="ventaRealizada"]').forEach(r => r.addEventListener('change', onVentaChange));
+  document.querySelectorAll('input[name="degustacionRealizada"]').forEach(r => r.addEventListener('change', onDegustacionChange));
+  document.querySelectorAll('input[name="novedadObservada"]').forEach(r => r.addEventListener('change', onNovedadChange));
+  document.querySelectorAll('input[name="obsequioEntregado"]').forEach(r => r.addEventListener('change', onObsequioChange));
+  document.getElementById('fileIngreso').addEventListener('change', e => leerFotoIngreso(e));
+
+  let pt; const persistDeb = () => { clearTimeout(pt); pt=setTimeout(persistir, 600); };
+  document.addEventListener('input', persistDeb);
+  document.addEventListener('change', persistDeb);
+
+  document.querySelector('.bottomnav').addEventListener('click', e => {
+    if (e.target.closest('#fab')) toggleModGrid();
+    else if (e.target.closest('#btnPersona')) abrirPersona();
+  });
+
+  if (!restaurarSesion()) renderNav();
+});
+
+// ===== NAV =====
+function puedeNavegar(id){ return id==='ingreso' || !!saved['ingreso']; }
+function goTo(id){
+  if(!puedeNavegar(id)){ toast('Completa el Ingreso (con foto) para desbloquear los demás módulos', true); return; }
+  current=id; renderNav(); closeModGrid(); if(id==='salida') renderResumen();
+}
+function renderNav(){
+  document.querySelectorAll('.mod').forEach(el => el.classList.toggle('active', el.dataset.mod===current));
+  const a = MODS.map(m=>m.id);
+  const meta = MODS.find(m=>m.id===current);
+  document.getElementById('stepPill').textContent = meta ? meta.label : '';
+  document.getElementById('progress').innerHTML = a.map(id => '<span class="' + (id===current?'cur':(saved[id]?'done':'')) + '"></span>').join('');
+  MODS.forEach(m => { const b=document.getElementById('badge-'+m.id); if(b) b.classList.toggle('on', !!saved[m.id]); });
+  renderModGrid();
+  window.scrollTo(0, 0);
+}
+function renderModGrid(){
+  const cont=document.getElementById('modgridGrid'); if(!cont) return;
+  cont.innerHTML = MODS.map(m=>{
+    const locked = m.gate && !saved['ingreso'];
+    const active = m.id===current;
+    const done = !!saved[m.id];
+    let badge='';
+    if(done) badge='<span class="modgrid-check"><svg class="icon"><use href="#i-check"/></svg></span>';
+    else if(locked) badge='<span class="modgrid-check" style="background:var(--muted)"><svg class="icon"><use href="#i-lock"/></svg></span>';
+    return '<div class="modgrid-item'+(active?' active':'')+(locked?' locked':'')+'" onclick="goTo(\''+m.id+'\')">'+badge+
+      '<div class="modgrid-ic"><svg class="icon"><use href="#'+m.icon+'"/></svg></div>'+
+      '<div class="modgrid-lbl">'+m.label+'</div></div>';
+  }).join('');
+}
+function toggleModGrid(){ modgridOpen?closeModGrid():openModGrid(); }
+function openModGrid(){ modgridOpen=true; document.getElementById('modgrid').classList.add('open'); document.getElementById('modgridBd').classList.add('open'); document.getElementById('fab').classList.add('spin'); renderModGrid(); }
+function closeModGrid(){ modgridOpen=false; document.getElementById('modgrid').classList.remove('open'); document.getElementById('modgridBd').classList.remove('open'); document.getElementById('fab').classList.remove('spin'); }
+
+function onIdentChange(){
+  const n=getAsesorNombre();
+  document.getElementById('heroGreet').textContent = n ? ('Hola, '+n.split(' ')[0]) : 'Hola';
+  const mn=document.getElementById('mercNombre'), md=document.getElementById('mercDoc'), mp=document.getElementById('mercPdv');
+  if(mn) mn.textContent = n || '—';
+  if(md) md.textContent = getAsesorDocumento() ? ('Documento '+getAsesorDocumento()) : '—';
+  if(mp) mp.textContent = getPDV() || '—';
+}
+
+// ===== PORTADA =====
+function comenzar(){
+  if(window._comenzando) return;
+  const n=getAsesorNombre(), pdv=getPDV();
+  if(!n || !pdv){
+    const f=document.getElementById('portadaForm');
+    f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake');
+    document.getElementById('portadaErr').style.display='block';
+    return;
+  }
+  window._comenzando=true;
+  document.getElementById('portadaErr').style.display='none';
+  onIdentChange();
+  capturarUbicacion();
+  const p=document.getElementById('portada');
+  p.classList.add('hide');
+  window._portadaTimer=setTimeout(()=>{ p.style.display='none'; },650);
+  persistir(); persistirFotos();
+  registroPromise=guardarSilencioso();
+}
+function reabrirPortada(){
+  window._comenzando=false;
+  clearTimeout(window._portadaTimer);
+  const p=document.getElementById('portada');
+  p.style.display='flex';
+  requestAnimationFrame(()=>p.classList.remove('hide'));
+}
+async function guardarSilencioso(){
+  try{
+    const eraNuevo=!registroId;
+    const gestion=recolectarGestion();
+    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({registroId:registroId,gestion:gestion}),redirect:'follow'});
+    const data=await res.json();
+    if(data&&data.success){ registroId=data.registroId||registroId; persistir(); if(eraNuevo) mostrarCodigoSesion(); }
+  }catch(e){ /* sin foto todavía o sin conexión: se guardará al guardar el módulo Ingreso */ }
+}
+
+// ===== CÓDIGO DE SESIÓN =====
+function mostrarCodigoSesion(){
+  const el=document.getElementById('codigoSesionTexto'); if(el) el.textContent=registroId;
+  document.getElementById('codigoSesionModal').classList.add('show');
+}
+function cerrarCodigoSesion(){ document.getElementById('codigoSesionModal').classList.remove('show'); }
+function copiarCodigoSesion(){
+  if(!registroId){ toast('Aún no hay código de sesión', true); return; }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(registroId).then(()=>toast('Código copiado')).catch(()=>fallbackCopy(registroId)); }
+  else fallbackCopy(registroId);
+}
+
+// ===== RECUPERAR SESIÓN =====
+function abrirRecuperarSesion(){
+  document.getElementById('codigoRecuperar').value='';
+  document.getElementById('recuperarErr').style.display='none';
+  document.getElementById('recuperarModal').classList.add('show');
+}
+function cerrarRecuperarSesion(){ document.getElementById('recuperarModal').classList.remove('show'); }
+async function confirmarRecuperarSesion(){
+  const codigo=document.getElementById('codigoRecuperar').value.trim();
+  const errBox=document.getElementById('recuperarErr');
+  if(!codigo){ errBox.textContent='Ingresa el código de sesión.'; errBox.style.display='block'; return; }
+  mostrarLoading('Recuperando sesión...');
+  try{
+    const res=await fetch(GAS_URL+'?action=recuperar&registroId='+encodeURIComponent(codigo),{redirect:'follow'});
+    const data=await res.json();
+    ocultarLoading();
+    if(data&&data.success){
+      aplicarGestionRemota(data.registroId, data.gestion||{});
+      cerrarRecuperarSesion();
+      toast('Sesión recuperada correctamente');
+    } else {
+      errBox.textContent=(data&&data.error)||'No se encontró esa sesión.';
+      errBox.style.display='block';
+    }
+  }catch(err){
+    ocultarLoading();
+    errBox.textContent='Error de conexión: '+err.message;
+    errBox.style.display='block';
+  }
+}
+function aplicarGestionRemota(registroIdRecuperado, g){
+  restaurando=true;
+  registroId=registroIdRecuperado;
+  asesorSel={nombre:g.asesorNombre||'',documento:g.asesorDocumento||'',telefono:g.asesorTelefono||''};
+  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||'';
+  if(modoManual){
+    document.getElementById('asesorNombreTexto').value=asesorSel.nombre;
+    document.getElementById('asesorDocumentoTexto').value=asesorSel.documento;
+    document.getElementById('asesorTelefonoTexto').value=asesorSel.telefono;
+    document.getElementById('pdvTexto').value=pendPDV;
+  } else { aplicarPendAsesorPDV(); }
+  setRadio('ventaRealizada', g.ventaRealizada); onVentaChange();
+  if(g.ventaMotivoNo!=null){ const el=document.getElementById('ventaMotivoNo'); if(el) el.value=g.ventaMotivoNo; }
+  setRadio('degustacionRealizada', g.degustacionRealizada); onDegustacionChange();
+  if(g.degustacionMotivoNo!=null){ const el=document.getElementById('degustacionMotivoNo'); if(el) el.value=g.degustacionMotivoNo; }
+  setRadio('novedadObservada', g.novedadObservada); onNovedadChange();
+  setRadio('obsequioEntregado', g.obsequioEntregado); onObsequioChange();
+  setRadio('espumanteEntregada', (g.activacion||{}).espumanteEntregada);
+  setRadio('tintoEntregada', (g.activacion||{}).tintoEntregada);
+  document.getElementById('impactos').value=(g.activacion||{}).impactos!=null?(g.activacion||{}).impactos:'';
+  document.getElementById('observacionesActivacion').value=(g.activacion||{}).observaciones||'';
+  const darId=list=>(list||[]).map(it=>Object.assign({id:uid('r')},it));
+  ventasList=darId(g.ventaProductos); degustacionesList=darId(g.degustacionProductos); novedadesList=darId(g.novedades); vozList=darId(g.vozConsumidor); obsequiosList=darId(g.obsequios);
+  renderVentas(); renderDegustaciones(); renderNovedades(); renderVoz(); renderObsequios();
+  fotoIngreso=''; fotoIngresoURL=g.fotoIngresoURL||'';
+  if(fotoIngresoURL){ document.getElementById('imgIngreso').src=fotoIngresoURL; document.getElementById('defIngreso').style.display='none'; document.getElementById('prevIngreso').style.display='block'; document.getElementById('uploadIngreso').classList.add('has'); }
+  ubicacion = { lat:g.latitud||null, lng:g.longitud||null, acc:g.precisionGPS||null };
+  aplicarUbicacionUI();
+  document.getElementById('observacionesGenerales').value=g.observacionesGenerales||'';
+  document.getElementById('proximaVisita').value=g.proximaVisita||'';
+  saved={}; (g.modulosGuardados||'').split(',').map(s=>s.trim()).filter(Boolean).forEach(id=>{ saved[id]=true; });
+  current='ingreso';
+  onIdentChange();
+  const p=document.getElementById('portada'); clearTimeout(window._portadaTimer); p.classList.add('hide'); p.style.display='none';
+  renderNav();
+  restaurando=false;
+  persistir();
+}
+
+// ===== ASESOR / PDV (portada) =====
+function onAsesorChange(){
+  const nombre=document.getElementById('asesorNombre').value;
+  const chip=document.getElementById('asesorChip'), texto=document.getElementById('asesorChipTexto');
+  if(!nombre){ asesorSel={nombre:'',documento:'',telefono:''}; chip.classList.remove('show'); onIdentChange(); return; }
+  const u=(parametrizacion.usuarios||[]).find(x=>x.nombre===nombre) || {nombre:nombre,documento:'',telefono:''};
+  asesorSel=u;
+  texto.innerHTML='<b>'+escHtml(u.nombre)+'</b> · Doc '+(escHtml(u.documento)||'—')+(u.telefono?(' · '+escHtml(u.telefono)):'');
+  chip.classList.add('show');
+  onIdentChange();
+}
+function onPdvChange(){ onIdentChange(); }
+function activarModoSelect(){
+  document.getElementById('asesorNombre').style.display='';
+  document.getElementById('puntoVenta').style.display='';
+  document.getElementById('identManual').style.display='none';
+  document.getElementById('pdvTexto').style.display='none';
+}
+function activarModoManual(msg){
+  modoManual=true;
+  document.getElementById('asesorNombre').style.display='none';
+  document.getElementById('puntoVenta').style.display='none';
+  document.getElementById('asesorChip').classList.remove('show');
+  document.getElementById('identManual').style.display='block';
+  document.getElementById('pdvTexto').style.display='';
+  document.getElementById('alertParamMsg').textContent=msg;
+  document.getElementById('alertParam').style.display='flex';
+  if(pendPDV!=null) document.getElementById('pdvTexto').value=pendPDV;
+}
+function ocultarAlertaParam(){ document.getElementById('alertParam').style.display='none'; }
+function getAsesorNombre(){ return modoManual?val('asesorNombreTexto'):document.getElementById('asesorNombre').value.trim(); }
+function getAsesorDocumento(){ return modoManual?val('asesorDocumentoTexto'):(asesorSel.documento||''); }
+function getAsesorTelefono(){ return modoManual?val('asesorTelefonoTexto'):(asesorSel.telefono||''); }
+function getPDV(){ return modoManual?val('pdvTexto'):document.getElementById('puntoVenta').value.trim(); }
+function aplicarPendAsesorPDV(){
+  if(pendAsesorNombre){ const s=document.getElementById('asesorNombre'); if(s && s.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(pendAsesorNombre):pendAsesorNombre)+'"]')){ s.value=pendAsesorNombre; onAsesorChange(); } }
+  if(pendPDV){ const s=document.getElementById('puntoVenta'); if(s && s.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(pendPDV):pendPDV)+'"]')){ s.value=pendPDV; onPdvChange(); } }
+}
+
+// ===== UBICACIÓN GPS =====
+function capturarUbicacion(){
+  const t=document.getElementById('locTitle'), d=document.getElementById('locDesc'), btn=document.getElementById('btnGPS');
+  if(!navigator.geolocation){ d.textContent='Tu dispositivo no soporta geolocalización.'; return; }
+  t.textContent='Obteniendo ubicación...'; d.textContent='Permite el acceso a tu ubicación'; btn.disabled=true;
+  navigator.geolocation.getCurrentPosition(pos => {
+    ubicacion.lat=+pos.coords.latitude.toFixed(6); ubicacion.lng=+pos.coords.longitude.toFixed(6); ubicacion.acc=Math.round(pos.coords.accuracy);
+    aplicarUbicacionUI();
+    btn.disabled=false; btn.innerHTML='<svg class="icon icon-sm"><use href="#i-refresh"/></svg>Volver a capturar';
+  }, err => {
+    btn.disabled=false; t.textContent='No se pudo obtener la ubicación';
+    d.textContent = err.code===1 ? 'Permiso denegado. Actívalo en el navegador.' : 'Intenta de nuevo en un lugar abierto.';
+  }, { enableHighAccuracy:true, timeout:12000, maximumAge:0 });
+}
+function aplicarUbicacionUI(){
+  if(!(ubicacion.lat&&ubicacion.lng)) return;
+  document.getElementById('locBox').classList.add('ok');
+  document.getElementById('locTitle').textContent='Ubicación capturada';
+  document.getElementById('locDesc').textContent='Precisión aproximada: '+(ubicacion.acc||'?')+' m';
+  const c=document.getElementById('locCoords'); c.style.display='flex';
+  c.innerHTML='<span>'+ubicacion.lat+', '+ubicacion.lng+'</span> · <a href="https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'" target="_blank">Ver en Maps</a>';
+}
+
+// ===== PARAMETRIZACIÓN =====
+async function cargarParametrizacion(){
+  ocultarAlertaParam();
+  try{
+    const res=await fetch(GAS_URL+'?action=parametrizacion',{redirect:'follow'});
+    const data=await res.json();
+    if(data&&data.success&&Array.isArray(data.pdvs)&&data.pdvs.length>0){
+      parametrizacion=data; modoManual=false; activarModoSelect();
+      cargarAsesores(); cargarPDVs(); poblarProductos(); aplicarPendAsesorPDV();
+    } else activarModoManual((data&&data.error)?data.error:'La hoja respondió sin puntos de venta. Revisa la hoja "PDV".');
+  }catch(err){ activarModoManual('No hay conexión con el servidor. ('+err.message+')'); }
+}
+function cargarAsesores(){
+  const s=document.getElementById('asesorNombre'); const actual=s.value;
+  s.innerHTML='<option value="">Selecciona tu nombre</option>'+(parametrizacion.usuarios||[]).slice().sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')).map(u=>'<option value="'+escAttr(u.nombre)+'">'+escHtml(u.nombre)+'</option>').join('');
+  if(actual) s.value=actual;
+}
+function cargarPDVs(){
+  const s=document.getElementById('puntoVenta'); const actual=s.value;
+  s.innerHTML='<option value="">Selecciona el punto de venta</option>'+(parametrizacion.pdvs||[]).slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'">'+escHtml(p)+'</option>').join('');
+  if(actual) s.value=actual;
+}
+function poblarProductos(){ renderVentas(); renderDegustaciones(); }
+
+// ===== SELECT SIMPLE DE PRODUCTO (SKU o Degustación) =====
+function opcionesProducto(lista, seleccionado){
+  return '<option value="">Selecciona el vino</option>'+(lista||[]).slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'"'+(p===seleccionado?' selected':'')+'>'+escHtml(p)+'</option>').join('');
+}
+function campoProducto(p, lista, onChangeFn){
+  return '<div class="field" style="margin-bottom:0"><label class="label label-req">Vino</label><select class="select" onchange="'+onChangeFn+'(\''+p.id+'\',this.value)">'+opcionesProducto(lista,p.producto)+'</select></div>';
+}
+function findItem(id){ return ventasList.find(x=>x.id===id) || degustacionesList.find(x=>x.id===id) || obsequiosList.find(x=>x.id===id); }
+function setCantidad(id,v){ const p=findItem(id); if(p) p.cantidad=parseFloat(v)||0; }
+
+// ===== VENTAS =====
+function agregarVenta(){ ventasList.push({id:uid('v'),producto:'',cantidad:1}); renderVentas(); }
+function eliminarVenta(id){ ventasList=ventasList.filter(x=>x.id!==id); renderVentas(); }
+function setProductoVenta(id,v){ const p=ventasList.find(x=>x.id===id); if(p) p.producto=v; }
+function renderVentas(){
+  const cont=document.getElementById('listaVentas'); if(!cont) return; cont.innerHTML='';
+  if(ventasList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega los vinos vendidos.</div>'; return; }
+  ventasList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
+    <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Vendido ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarVenta('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
+    ${campoProducto(p, parametrizacion.skus, 'setProductoVenta')}
+    <div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">Cantidad</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
+}
+function onVentaChange(){ const v=(document.querySelector('input[name="ventaRealizada"]:checked')||{}).value; document.getElementById('ventaNo').style.display=v==='No'?'block':'none'; document.getElementById('ventaSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&ventasList.length===0&&!restaurando) agregarVenta(); }
+
+// ===== DEGUSTACIONES =====
+function agregarDegustacion(){ degustacionesList.push({id:uid('d'),producto:'',cantidad:1}); renderDegustaciones(); }
+function eliminarDegustacion(id){ degustacionesList=degustacionesList.filter(x=>x.id!==id); renderDegustaciones(); }
+function setProductoDegustacion(id,v){ const p=degustacionesList.find(x=>x.id===id); if(p) p.producto=v; }
+function renderDegustaciones(){
+  const cont=document.getElementById('listaDegustaciones'); if(!cont) return; cont.innerHTML='';
+  if(degustacionesList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega las degustaciones servidas.</div>'; return; }
+  degustacionesList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
+    <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-wine"/></svg>Degustación ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarDegustacion('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
+    ${campoProducto(p, parametrizacion.degustaciones, 'setProductoDegustacion')}
+    <div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">Cantidad servida</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
+}
+function onDegustacionChange(){ const v=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value; document.getElementById('degustacionNo').style.display=v==='No'?'block':'none'; document.getElementById('degustacionSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&degustacionesList.length===0&&!restaurando) agregarDegustacion(); }
+
+// ===== NOVEDADES DEL PDV =====
+function agregarNovedad(){ novedadesList.push({id:uid('n'),tipo:'',marca:'',descripcion:''}); renderNovedades(); }
+function eliminarNovedad(id){ novedadesList=novedadesList.filter(x=>x.id!==id); renderNovedades(); }
+function setNovedadField(id,campo,v){ const p=novedadesList.find(x=>x.id===id); if(p) p[campo]=v; }
+function renderNovedades(){
+  const cont=document.getElementById('listaNovedades'); if(!cont) return; cont.innerHTML='';
+  if(novedadesList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega la novedad observada.</div>'; return; }
+  novedadesList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
+    <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-alert"/></svg>Novedad ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarNovedad('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
+    <div class="field"><label class="label label-req">Tipo de novedad</label><select class="select" onchange="setNovedadField('${p.id}','tipo',this.value)"><option value="">Seleccionar</option>${TIPOS_NOVEDAD.map(t=>'<option value="'+escAttr(t)+'"'+(t===p.tipo?' selected':'')+'>'+escHtml(t)+'</option>').join('')}</select></div>
+    <div class="field"><label class="label">Marca o producto observado</label><input type="text" class="input" placeholder="Ej: marca de la competencia" value="${escAttr(p.marca)}" oninput="setNovedadField('${p.id}','marca',this.value)"></div>
+    <div class="field" style="margin-bottom:0"><label class="label">Descripción</label><textarea class="textarea" placeholder="Detalle de lo observado" oninput="setNovedadField('${p.id}','descripcion',this.value)">${escHtml(p.descripcion||'')}</textarea></div>`; cont.appendChild(d); });
+}
+function onNovedadChange(){ const v=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value; document.getElementById('novedadSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&novedadesList.length===0&&!restaurando) agregarNovedad(); }
+
+// ===== OBSEQUIOS =====
+function agregarObsequio(){ obsequiosList.push({id:uid('o'),tipo:'',otroTexto:'',cantidad:1}); renderObsequios(); }
+function eliminarObsequio(id){ obsequiosList=obsequiosList.filter(x=>x.id!==id); renderObsequios(); }
+function setObsequioTipo(id,v){ const p=obsequiosList.find(x=>x.id===id); if(p){ p.tipo=v; if(v!=='Otro') p.otroTexto=''; } renderObsequios(); }
+function setObsequioOtro(id,v){ const p=obsequiosList.find(x=>x.id===id); if(p) p.otroTexto=v; }
+function renderObsequios(){
+  const cont=document.getElementById('listaObsequios'); if(!cont) return; cont.innerHTML='';
+  if(obsequiosList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega el obsequio entregado.</div>'; return; }
+  obsequiosList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
+    <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-box"/></svg>Obsequio ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarObsequio('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
+    <div class="field"><label class="label label-req">Tipo de obsequio</label><select class="select" onchange="setObsequioTipo('${p.id}',this.value)"><option value="">Seleccionar</option>${TIPOS_OBSEQUIO.map(t=>'<option value="'+escAttr(t)+'"'+(t===p.tipo?' selected':'')+'>'+escHtml(t)+'</option>').join('')}</select></div>
+    ${p.tipo==='Otro'?'<div class="field"><label class="label label-req">¿Cuál?</label><input type="text" class="input" placeholder="Nombre del obsequio" value="'+escAttr(p.otroTexto)+'" oninput="setObsequioOtro(\''+p.id+'\',this.value)"></div>':''}
+    <div class="field" style="margin-bottom:0"><label class="label label-req">Cantidad</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
+}
+function onObsequioChange(){ const v=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value; document.getElementById('obsequioSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&obsequiosList.length===0&&!restaurando) agregarObsequio(); }
+
+// ===== VOZ DEL CONSUMIDOR =====
+// Captura la preferencia de tipo de vino, percepción de marca, uso, atributos deseados
+// y percepción tras la degustación, con opciones de un toque (emoji) para responder rápido.
+function agregarVoz(){ vozList.push({id:uid('voz'),tipoVinoPreferido:'',conoceMarca:'',usoMarca:'',opinionProductos:0,atributosDeseados:[],atributosOtro:'',percepcionDegustacion:'',mejoraria:'',productoComentado:'',edad:''}); renderVoz(); }
+function eliminarVoz(id){ vozList=vozList.filter(x=>x.id!==id); renderVoz(); }
+function renderVoz(){
+  const cont=document.getElementById('listaVoz'); if(!cont) return; cont.innerHTML='';
+  if(vozList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega la opinión de un consumidor.</div>'; return; }
+  vozList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
+    <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-chat"/></svg>Opinión ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarVoz('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
+
+    <div class="field"><label class="label label-req">¿Qué tipo de vino le gusta más?</label>${gruposEmojiRadio('tipoVinoPreferido',p,TIPO_VINO)}</div>
+    <div class="field"><label class="label label-req">¿Conocía la marca?</label>${gruposEmojiRadio('conoceMarca',p,CONOCE_MARCA)}</div>
+    <div class="field"><label class="label label-req">¿Ha probado los vinos de la marca?</label>${gruposEmojiRadio('usoMarca',p,USO_MARCA)}</div>
+    <div class="field"><label class="label label-req">¿Qué opinión tiene sobre los vinos de la marca?</label>${gruposEmojiRadio('opinionProductos',p,OPINION_PRODUCTOS)}</div>
+    <div class="field"><label class="label">¿Qué le gustaría ver que la competencia no ofrece?</label>
+      ${gruposAtributos(p)}
+      <input type="text" class="input" style="margin-top:9px" placeholder="Otro (opcional)" value="${escAttr(p.atributosOtro)}" oninput="setFldVoz('${p.id}','atributosOtro',this.value)">
+    </div>
+    <div class="field"><label class="label label-req">Después de la degustación, ¿cuál fue su percepción?</label>${gruposEmojiRadio('percepcionDegustacion',p,PERCEPCION_DEGUSTACION)}</div>
+    <div class="field"><label class="label">¿Qué cosas mejoraría?</label><textarea class="textarea" placeholder="Ideas o cosas por mejorar" oninput="setFldVoz('${p.id}','mejoraria',this.value)">${escHtml(p.mejoraria||'')}</textarea></div>
+    <div class="field"><label class="label">Vino o línea comentada <span style="font-weight:400;color:var(--muted)">(opcional)</span></label><input type="text" class="input" placeholder="Ej: Nuit Doree Rose" value="${escAttr(p.productoComentado)}" oninput="setFldVoz('${p.id}','productoComentado',this.value)"></div>
+    <div class="field" style="margin-bottom:0"><label class="label">Rango de edad aprox.</label>${gruposEdad(p)}</div>`; cont.appendChild(d); });
+}
+function setFldVoz(id,campo,v){ const p=vozList.find(x=>x.id===id); if(p) p[campo]=v; }
+function toggleAtributo(id, valor, checked){
+  const p=vozList.find(x=>x.id===id); if(!p) return;
+  if(!Array.isArray(p.atributosDeseados)) p.atributosDeseados=[];
+  if(checked){ if(p.atributosDeseados.indexOf(valor)===-1) p.atributosDeseados.push(valor); }
+  else { p.atributosDeseados=p.atributosDeseados.filter(v=>v!==valor); }
+}
+// Grupo de opciones de una sola respuesta, mostradas como botón emoji + etiqueta corta
+function gruposEmojiRadio(campo, p, opciones){
+  return `<div class="opt-grid emoji-grid">${opciones.map(o=>{
+    const idSafe='voz-'+campo+'-'+p.id+'-'+String(o.v).replace(/[^a-zA-Z0-9]/g,'');
+    const checked = String(p[campo])===String(o.v);
+    const setVal = typeof o.v==='number' ? o.v : ("'"+escAttr(String(o.v))+"'");
+    return `<div class="opt"><input type="radio" name="voz-${campo}-${p.id}" id="${idSafe}"${checked?' checked':''} onchange="setFldVoz('${p.id}','${campo}',${setVal})">
+      <label for="${idSafe}"><span class="emoji-ic">${o.e}</span><span class="emoji-lbl">${o.l||o.v}</span></label></div>`;
+  }).join('')}</div>`;
+}
+// Selección múltiple (varios atributos a la vez)
+function gruposAtributos(p){
+  const sel=p.atributosDeseados||[];
+  return `<div class="opt-grid emoji-grid">${ATRIBUTOS_DESEADOS.map(o=>{
+    const idSafe='voz-attr-'+p.id+'-'+o.v.replace(/[^a-zA-Z0-9]/g,'');
+    return `<div class="opt"><input type="checkbox" id="${idSafe}"${sel.indexOf(o.v)!==-1?' checked':''} onchange="toggleAtributo('${p.id}','${escAttr(o.v)}',this.checked)">
+      <label for="${idSafe}"><span class="emoji-ic">${o.e}</span><span class="emoji-lbl">${o.v}</span></label></div>`;
+  }).join('')}</div>`;
+}
+function gruposEdad(p){
+  return `<div class="opt-grid">${EDADES.map(v=>{
+    const idSafe='voz-edad-'+p.id+'-'+v.replace(/[^a-zA-Z0-9]/g,'');
+    return `<div class="opt"><input type="radio" name="voz-edad-${p.id}" id="${idSafe}"${p.edad===v?' checked':''} onchange="setFldVoz('${p.id}','edad','${v}')"><label for="${idSafe}">${v}</label></div>`;
+  }).join('')}</div>`;
+}
+
+// ===== FOTO DE INGRESO =====
+function aplicarFotoIngreso(data){
+  fotoIngreso=data; fotoIngresoURL='';
+  document.getElementById('imgIngreso').src=data;
+  document.getElementById('defIngreso').style.display='none';
+  document.getElementById('prevIngreso').style.display='block';
+  document.getElementById('uploadIngreso').classList.add('has');
+}
+function leerFotoIngreso(e){
+  const file=e.target.files[0]; if(!file) return;
+  if(file.size>25*1024*1024){ alert('La imagen es muy pesada (más de 25 MB).'); e.target.value=''; return; }
+  comprimirImagen(file, 1280, 0.7, data=>{
+    if(!data){ alert('No se pudo procesar la foto (memoria insuficiente en el dispositivo). Cierra otras apps/pestañas e intenta de nuevo, o toma la foto con menos resolución.'); e.target.value=''; return; }
+    aplicarFotoIngreso(data); persistir(); persistirFotos();
+  });
+}
+function quitarFotoIngreso(){
+  fotoIngreso=''; fotoIngresoURL=''; document.getElementById('fileIngreso').value='';
+  document.getElementById('defIngreso').style.display='block';
+  document.getElementById('prevIngreso').style.display='none';
+  document.getElementById('uploadIngreso').classList.remove('has');
+  persistir(); persistirFotos();
+}
+function comprimirImagen(archivo, maxLado, calidad, cb){
+  const previoBitmap = window.createImageBitmap ? createImageBitmap(archivo).catch(()=>null) : Promise.resolve(null);
+  previoBitmap.then(bitmap=>{
+    if(bitmap){
+      try{
+        let w=bitmap.width, h=bitmap.height; const m=Math.max(w,h);
+        if(m>maxLado){ const esc=maxLado/m; w=Math.round(w*esc); h=Math.round(h*esc); }
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(bitmap,0,0,w,h);
+        if(bitmap.close) bitmap.close();
+        cb(c.toDataURL('image/jpeg', calidad));
+        return;
+      }catch(err){ /* sigue al fallback */ }
+    }
+    comprimirImagenFallback(archivo, maxLado, calidad, cb);
+  });
+}
+function comprimirImagenFallback(archivo, maxLado, calidad, cb){
+  const esBlob = typeof archivo !== 'string';
+  const url = esBlob ? URL.createObjectURL(archivo) : archivo;
+  const img=new Image();
+  img.onload=function(){
+    if(esBlob) URL.revokeObjectURL(url);
+    let w=img.width, h=img.height; const m=Math.max(w,h);
+    if(m>maxLado){ const esc=maxLado/m; w=Math.round(w*esc); h=Math.round(h*esc); }
+    try{
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg', calidad));
+    }catch(err){ cb(null); }
+  };
+  img.onerror=function(){ if(esBlob) URL.revokeObjectURL(url); cb(null); };
+  img.src=url;
+}
+
+// ===== PANEL PERSONA =====
+function abrirPersona(){
+  document.getElementById('pNombre').textContent = getAsesorNombre() || '—';
+  document.getElementById('pDoc').textContent = getAsesorDocumento() || '—';
+  document.getElementById('pTel').textContent = getAsesorTelefono() || '—';
+  document.getElementById('pPdvActual').textContent = getPDV() || '—';
+  document.getElementById('pCodigoSesion').textContent = registroId || 'Aún no generado';
+  document.getElementById('personaModal').classList.add('show');
+}
+function cerrarPersona(){ document.getElementById('personaModal').classList.remove('show'); }
+
+// ===== PERSISTENCIA DE SESIÓN =====
+function persistir(){
+  if(restaurando) return;
+  try{
+    const campos=recolectarGestion(); campos.fotoIngreso='';
+    const data={ loggedIn:true, guardadoEn:Date.now(), registroId, saved, current, ubicacion, fotoIngresoURL, campos, asesorSel, listas:{ ventasList, degustacionesList, novedadesList, vozList, obsequiosList } };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  }catch(e){}
+}
+function persistirFotos(){ try{ localStorage.setItem(LS_FOTOS, JSON.stringify({ fotoIngreso })); }catch(e){} }
+function limpiarSesionLocal(){ try{ localStorage.removeItem(LS_KEY); localStorage.removeItem(LS_FOTOS); }catch(e){} }
+function restaurarSesion(){
+  let raw; try{ raw=localStorage.getItem(LS_KEY); }catch(e){ return false; }
+  if(!raw) return false;
+  let d; try{ d=JSON.parse(raw); }catch(e){ return false; }
+  if(!d || !d.loggedIn || !d.campos) return false;
+  if(d.guardadoEn && (Date.now()-d.guardadoEn) > SESION_MAX_MS){ limpiarSesionLocal(); return false; }
+  restaurando=true;
+  const g=d.campos;
+  asesorSel=d.asesorSel||{nombre:'',documento:'',telefono:''};
+  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||'';
+  if(modoManual){
+    document.getElementById('asesorNombreTexto').value=asesorSel.nombre;
+    document.getElementById('asesorDocumentoTexto').value=asesorSel.documento;
+    document.getElementById('asesorTelefonoTexto').value=asesorSel.telefono;
+    document.getElementById('pdvTexto').value=pendPDV;
+  } else { aplicarPendAsesorPDV(); }
+  setRadio('ventaRealizada', g.ventaRealizada); onVentaChange();
+  if(g.ventaMotivoNo!=null){ const el=document.getElementById('ventaMotivoNo'); if(el) el.value=g.ventaMotivoNo; }
+  setRadio('degustacionRealizada', g.degustacionRealizada); onDegustacionChange();
+  if(g.degustacionMotivoNo!=null){ const el=document.getElementById('degustacionMotivoNo'); if(el) el.value=g.degustacionMotivoNo; }
+  setRadio('novedadObservada', g.novedadObservada); onNovedadChange();
+  setRadio('obsequioEntregado', g.obsequioEntregado); onObsequioChange();
+  setRadio('espumanteEntregada', (g.activacion||{}).espumanteEntregada);
+  setRadio('tintoEntregada', (g.activacion||{}).tintoEntregada);
+  document.getElementById('impactos').value=(g.activacion||{}).impactos!=null?(g.activacion||{}).impactos:'';
+  document.getElementById('observacionesActivacion').value=(g.activacion||{}).observaciones||'';
+  const L=d.listas||{};
+  ventasList=L.ventasList||[]; degustacionesList=L.degustacionesList||[]; novedadesList=L.novedadesList||[]; vozList=L.vozList||[]; obsequiosList=L.obsequiosList||[];
+  renderVentas(); renderDegustaciones(); renderNovedades(); renderVoz(); renderObsequios();
+  ubicacion=d.ubicacion||{lat:null,lng:null,acc:null};
+  aplicarUbicacionUI();
+  let fotos={}; try{ fotos=JSON.parse(localStorage.getItem(LS_FOTOS)||'{}'); }catch(e){}
+  fotoIngresoURL=d.fotoIngresoURL||'';
+  if(fotos.fotoIngreso){ aplicarFotoIngreso(fotos.fotoIngreso); }
+  else if(fotoIngresoURL){ document.getElementById('imgIngreso').src=fotoIngresoURL; document.getElementById('defIngreso').style.display='none'; document.getElementById('prevIngreso').style.display='block'; document.getElementById('uploadIngreso').classList.add('has'); }
+  document.getElementById('observacionesGenerales').value=g.observacionesGenerales||'';
+  document.getElementById('proximaVisita').value=g.proximaVisita||'';
+  saved=d.saved||{}; registroId=d.registroId||''; current=d.current||'ingreso';
+  onIdentChange();
+  const p=document.getElementById('portada'); p.classList.add('hide'); p.style.display='none';
+  renderNav();
+  restaurando=false;
+  return true;
+}
+function setRadio(name, value){ if(!value) return; const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
+
+// ===== VALIDACIÓN Y GUARDADO =====
+function validarModulo(id){
+  const e=[];
+  if(id==='ingreso'){
+    if(!getAsesorNombre()) e.push('Asesor');
+    if(!getAsesorDocumento()) e.push('Documento del asesor');
+    if(!getPDV()) e.push('Punto de venta');
+    if(!ubicacion.lat || !ubicacion.lng) e.push('Ubicación GPS');
+    if(!(fotoIngreso||fotoIngresoURL)) e.push('Foto de ingreso (obligatoria)');
+  }
+  if(id==='ventas'){
+    const v=(document.querySelector('input[name="ventaRealizada"]:checked')||{}).value;
+    if(!v) e.push('¿Se realizó venta?');
+    if(v==='No'&&!val('ventaMotivoNo')) e.push('Motivo de no venta');
+    if(v==='Si'){
+      if(ventasList.length===0) e.push('Agrega al menos un vino vendido');
+      ventasList.forEach((p,i)=>{ if(!p.producto) e.push('Vino vendido '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad vendido '+(i+1)); });
+    }
+  }
+  if(id==='degustaciones'){
+    const v=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value;
+    if(!v) e.push('¿Se realizaron degustaciones?');
+    if(v==='No'&&!val('degustacionMotivoNo')) e.push('Motivo de no degustación');
+    if(v==='Si'){
+      if(degustacionesList.length===0) e.push('Agrega al menos una degustación');
+      degustacionesList.forEach((p,i)=>{ if(!p.producto) e.push('Vino degustado '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad degustada '+(i+1)); });
+    }
+  }
+  if(id==='novedades'){
+    const v=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value;
+    if(!v) e.push('¿Se observó alguna novedad en el punto?');
+    if(v==='Si'){
+      if(novedadesList.length===0) e.push('Agrega al menos una novedad');
+      novedadesList.forEach((p,i)=>{ if(!p.tipo) e.push('Tipo de novedad '+(i+1)); });
+    }
+  }
+  if(id==='voz'){
+    if(vozList.length===0) e.push('Agrega al menos una opinión de consumidor');
+    vozList.forEach((p,i)=>{
+      if(!p.tipoVinoPreferido) e.push('Tipo de vino preferido (opinión '+(i+1)+')');
+      if(!p.conoceMarca) e.push('¿Conocía la marca? (opinión '+(i+1)+')');
+      if(!p.usoMarca) e.push('¿Ha probado la marca? (opinión '+(i+1)+')');
+      if(!p.opinionProductos) e.push('Opinión sobre los vinos (opinión '+(i+1)+')');
+      if(!p.percepcionDegustacion) e.push('Percepción tras la degustación (opinión '+(i+1)+')');
+    });
+  }
+  if(id==='obsequios'){
+    const v=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value;
+    if(!v) e.push('¿Se entregaron obsequios?');
+    if(v==='Si'){
+      if(obsequiosList.length===0) e.push('Agrega al menos un obsequio');
+      obsequiosList.forEach((p,i)=>{ if(!p.tipo) e.push('Tipo de obsequio '+(i+1)); if(p.tipo==='Otro'&&!p.otroTexto) e.push('¿Cuál obsequio? '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad obsequio '+(i+1)); });
+    }
+  }
+  if(id==='activacion'){
+    const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value;
+    const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value;
+    if(!es) e.push('¿Se entregó la botella espumante?');
+    if(!ti) e.push('¿Se entregó la botella tinta?');
+    if(val('impactos')==='') e.push('Impactos generados');
+  }
+  return e;
+}
+function recolectarGestion(){
+  return {
+    registroId: registroId,
+    asesorNombre: getAsesorNombre(), asesorDocumento: getAsesorDocumento(), asesorTelefono: getAsesorTelefono(),
+    puntoVenta: getPDV(),
+    latitud: ubicacion.lat||'', longitud: ubicacion.lng||'', precisionGPS: ubicacion.acc||'',
+    fotoIngreso: fotoIngreso, fotoIngresoURL: fotoIngresoURL,
+    ventaRealizada: (document.querySelector('input[name="ventaRealizada"]:checked')||{}).value||'',
+    ventaMotivoNo: val('ventaMotivoNo'),
+    ventaProductos: ventasList.map(p=>({producto:p.producto,cantidad:p.cantidad})),
+    degustacionRealizada: (document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'',
+    degustacionMotivoNo: val('degustacionMotivoNo'),
+    degustacionProductos: degustacionesList.map(p=>({producto:p.producto,cantidad:p.cantidad})),
+    novedadObservada: (document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'',
+    novedades: novedadesList.map(p=>({tipo:p.tipo,marca:p.marca,descripcion:p.descripcion})),
+    vozConsumidor: vozList.map(p=>({tipoVinoPreferido:p.tipoVinoPreferido,conoceMarca:p.conoceMarca,usoMarca:p.usoMarca,opinionProductos:p.opinionProductos,atributosDeseados:p.atributosDeseados||[],atributosOtro:p.atributosOtro,percepcionDegustacion:p.percepcionDegustacion,mejoraria:p.mejoraria,productoComentado:p.productoComentado,edad:p.edad})),
+    obsequioEntregado: (document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'',
+    obsequios: obsequiosList.map(p=>({tipo:p.tipo,otroTexto:p.otroTexto,cantidad:p.cantidad})),
+    activacion: {
+      espumanteEntregada: (document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'',
+      tintoEntregada: (document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'',
+      impactos: val('impactos'),
+      observaciones: val('observacionesActivacion')
+    },
+    observacionesGenerales: val('observacionesGenerales'), proximaVisita: val('proximaVisita'),
+    modulosGuardados: ''
+  };
+}
+async function guardarModulo(id, finalizar){
+  const errs=validarModulo(id);
+  if(errs.length>0){ alert('Completa antes de guardar:\n\n• '+errs.join('\n• ')); return; }
+  if(registroPromise){ mostrarLoading('Guardando...'); try{ await registroPromise; }catch(e){} registroPromise=null; }
+  const eraNuevo=!registroId;
+  const gestion=recolectarGestion();
+  saved[id]=true;
+  gestion.modulosGuardados=Object.keys(saved).filter(k=>saved[k]).join(', ');
+  if(finalizar) gestion.horaSalidaPDV=new Date().toString();
+  mostrarLoading(finalizar?'Finalizando gestión...':'Guardando '+(MODS.find(m=>m.id===id)||{}).label+'...');
+  try{
+    const res=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({registroId:registroId,gestion:gestion,modulo:id}),redirect:'follow'});
+    const data=await res.json(); ocultarLoading();
+    if(data&&data.success){
+      registroId=data.registroId||registroId;
+      if(eraNuevo&&registroId) mostrarCodigoSesion();
+      if(data.fotoIngresoURL){ fotoIngresoURL=data.fotoIngresoURL; fotoIngreso=''; }
+      renderNav(); persistir();
+      if(finalizar){ mostrarExito(data); }
+      else { toast((MODS.find(m=>m.id===id)||{}).label+' guardado'); }
+    } else { saved[id]=false; alert('Error: '+(data&&data.error?data.error:'desconocido')); }
+  }catch(err){ saved[id]=false; ocultarLoading(); alert('Error de red: '+err.message); }
+}
+function toast(msg, warn){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; t.querySelector('.icon use').setAttribute('href', warn?'#i-alert':'#i-check'); t.classList.toggle('warn', !!warn); t.classList.add('show'); clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2200); }
+function mostrarLoading(m){ document.getElementById('loadingMsg').textContent=m; document.getElementById('loadingOverlay').classList.add('show'); }
+function ocultarLoading(){ document.getElementById('loadingOverlay').classList.remove('show'); }
+function mostrarExito(d){ document.getElementById('successInfo').textContent='Registro: '+d.registroId; document.getElementById('successModal').classList.add('show'); }
+
+// ===== SALIDA DEL PDV (resumen) =====
+function renderResumen(){
+  const cont=document.getElementById('resumenContenido');
+  const ventaR=(document.querySelector('input[name="ventaRealizada"]:checked')||{}).value||'';
+  const degustacionR=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'';
+  const novedadR=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'';
+  const obsequioR=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'';
+  const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'';
+  const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'';
+  const ubic=(ubicacion.lat&&ubicacion.lng)?'<a href="https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'" target="_blank">Abrir en Maps</a> ('+ubicacion.lat+', '+ubicacion.lng+')':'No capturada';
+
+  let h='';
+  h+=sec('i-user','Asesor',[ ln('Nombre',escHtml(getAsesorNombre())||'—'), ln('Documento',escHtml(getAsesorDocumento())||'—'), ln('Teléfono',escHtml(getAsesorTelefono())||'—'), ln('Código de sesión',escHtml(registroId)||'—') ]);
+  h+=sec('i-pin','Punto de venta',[ ln('PDV',escHtml(getPDV())||'—'), ln('Ubicación',ubic), ln('Foto de ingreso',(fotoIngreso||fotoIngresoURL)?(fotoIngresoURL?'<a href="'+fotoIngresoURL+'" target="_blank">Ver foto</a>':'Tomada ✓'):'—') ]);
+
+  let vH='<div class="res-line"><span class="rk">¿Se realizó venta?</span><span class="rv">'+(ventaR||'—')+'</span></div>';
+  if(ventaR==='No') vH+='<div class="res-line"><span class="rk">Motivo</span><span class="rv">'+(escHtml(val('ventaMotivoNo'))||'—')+'</span></div>';
+  if(ventaR==='Si'){ vH+=(ventasList.length?ventasList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.producto)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin vinos vendidos</div>'); }
+  h+=secRaw('i-cart','Ventas',vH);
+
+  let dH='<div class="res-line"><span class="rk">¿Se realizaron degustaciones?</span><span class="rv">'+(degustacionR||'—')+'</span></div>';
+  if(degustacionR==='No') dH+='<div class="res-line"><span class="rk">Motivo</span><span class="rv">'+(escHtml(val('degustacionMotivoNo'))||'—')+'</span></div>';
+  if(degustacionR==='Si'){ dH+=(degustacionesList.length?degustacionesList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.producto)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin degustaciones registradas</div>'); }
+  h+=secRaw('i-wine','Degustaciones',dH);
+
+  let noH='<div class="res-line"><span class="rk">¿Novedad observada?</span><span class="rv">'+(novedadR||'—')+'</span></div>';
+  if(novedadR==='Si'){ noH+=(novedadesList.length?novedadesList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.tipo)||'—')+'</b>'+(p.marca?' · '+escHtml(p.marca):'')+(p.descripcion?' — '+escHtml(p.descripcion):'')+'</div>').join(''):'<div class="res-mini">Sin novedades registradas</div>'); }
+  h+=secRaw('i-alert','Novedades del PDV',noH);
+
+  const vozH = vozList.length ? vozList.map((p,i)=>{
+    const op=OPINION_PRODUCTOS.find(o=>String(o.v)===String(p.opinionProductos));
+    const pm=PERCEPCION_DEGUSTACION.find(o=>o.v===p.percepcionDegustacion);
+    const atributos=[...(p.atributosDeseados||[]), p.atributosOtro].filter(Boolean).join(', ');
+    return '<div style="padding:9px 0;border-bottom:1px solid var(--line)">'+
+      '<div class="res-mini"><b>Opinión '+(i+1)+'</b></div>'+
+      '<div class="res-mini">Tipo de vino preferido: '+(escHtml(p.tipoVinoPreferido)||'—')+'</div>'+
+      '<div class="res-mini">¿Conocía la marca? '+(escHtml(p.conoceMarca)||'—')+'</div>'+
+      '<div class="res-mini">¿La ha probado? '+(escHtml(p.usoMarca)||'—')+'</div>'+
+      '<div class="res-mini">Opinión sobre los vinos: '+(op?op.e+' '+op.l:'—')+'</div>'+
+      (atributos?'<div class="res-mini">Le gustaría ver: '+escHtml(atributos)+'</div>':'')+
+      '<div class="res-mini">Percepción tras la degustación: '+(pm?pm.e+' '+pm.v:'—')+'</div>'+
+      (p.productoComentado?'<div class="res-mini">Vino comentado: '+escHtml(p.productoComentado)+'</div>':'')+
+      (p.mejoraria?'<div class="res-mini">Mejoraría: "'+escHtml(p.mejoraria)+'"</div>':'')+
+      (p.edad?'<div class="res-mini">Edad aprox.: '+escHtml(p.edad)+'</div>':'')+
+    '</div>';
+  }).join('') : '<div class="res-mini">Sin opiniones registradas</div>';
+  h+=secRaw('i-chat','Voz del Consumidor ('+vozList.length+')', vozH);
+
+  let obH='<div class="res-line"><span class="rk">¿Obsequios entregados?</span><span class="rv">'+(obsequioR||'—')+'</span></div>';
+  if(obsequioR==='Si'){ obH+=(obsequiosList.length?obsequiosList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.tipo==='Otro'?p.otroTexto:p.tipo)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin obsequios registrados</div>'); }
+  h+=secRaw('i-box','Obsequios',obH);
+
+  const actH='<div class="res-line"><span class="rk">Botella espumante</span><span class="rv">'+(es||'—')+'</span></div>'+
+    '<div class="res-line"><span class="rk">Botella tinta</span><span class="rv">'+(ti||'—')+'</span></div>'+
+    '<div class="res-line"><span class="rk">Impactos generados</span><span class="rv">'+(val('impactos')||'—')+'</span></div>';
+  h+=secRaw('i-bottle','Activación de Botellas', actH);
+
+  h+='<div class="res-sec-h" style="margin-top:4px"><svg class="icon icon-sm"><use href="#i-list"/></svg>Estado de módulos</div>';
+  h+=MODS.filter(m=>m.id!=='salida').map(m=>'<div class="mod-state"><div class="ms-ic"><svg class="icon icon-sm"><use href="#'+m.icon+'"/></svg></div><div class="ms-name">'+m.label+'</div><span class="ms-tag '+(saved[m.id]?'ok':'no')+'">'+(saved[m.id]?'Guardado':'Pendiente')+'</span></div>').join('');
+  cont.innerHTML=h;
+}
+function sec(icon,titulo,lines){ return '<div class="res-sec"><div class="res-sec-h"><svg class="icon icon-sm"><use href="#'+icon+'"/></svg>'+titulo+'</div>'+lines.join('')+'</div>'; }
+function secRaw(icon,titulo,html){ return '<div class="res-sec"><div class="res-sec-h"><svg class="icon icon-sm"><use href="#'+icon+'"/></svg>'+titulo+'</div>'+html+'</div>'; }
+function ln(k,v){ return '<div class="res-line"><span class="rk">'+k+'</span><span class="rv">'+v+'</span></div>'; }
+
+// ===== COMPARTIR / WHATSAPP =====
+function generarTextoGestion(){
+  const ventaR=(document.querySelector('input[name="ventaRealizada"]:checked')||{}).value||'';
+  const degustacionR=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'';
+  const novedadR=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'';
+  const obsequioR=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'';
+  const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'';
+  const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'';
+  const linea='━━━━━━━━━━━━━━';
+  let t='🍷 *GESTIÓN MEICO VINOS*\n'+linea+'\n';
+  t+='👤 *'+(getAsesorNombre()||'-')+'*\n';
+  t+='🪪 Doc '+(getAsesorDocumento()||'-')+'\n';
+  if(getAsesorTelefono()) t+='📞 '+getAsesorTelefono()+'\n';
+  t+='🔑 Código de sesión: '+(registroId||'-')+'\n';
+  t+='📍 '+(getPDV()||'-')+'\n';
+  if(ubicacion.lat&&ubicacion.lng) t+='🗺️ https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'\n';
+  t+='\n🛒 *VENTAS:* '+(ventaR||'-')+'\n';
+  if(ventaR==='No') t+='   ↳ Motivo: '+(val('ventaMotivoNo')||'-')+'\n';
+  if(ventaR==='Si'){ ventasList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+'_\n'; }); }
+  t+='\n🍷 *DEGUSTACIONES:* '+(degustacionR||'-')+'\n';
+  if(degustacionR==='No') t+='   ↳ Motivo: '+(val('degustacionMotivoNo')||'-')+'\n';
+  if(degustacionR==='Si'){ degustacionesList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+'_\n'; }); }
+  if(novedadR==='Si'&&novedadesList.length){ t+='\n📣 *NOVEDADES DEL PDV*\n'; novedadesList.forEach(p=>{ t+='   • '+(p.tipo||'-')+(p.marca?' · '+p.marca:'')+(p.descripcion?' — '+p.descripcion:'')+'\n'; }); }
+  if(vozList.length){
+    t+='\n💬 *VOZ DEL CONSUMIDOR*\n';
+    vozList.forEach((p,i)=>{
+      const op=OPINION_PRODUCTOS.find(o=>String(o.v)===String(p.opinionProductos));
+      const pm=PERCEPCION_DEGUSTACION.find(o=>o.v===p.percepcionDegustacion);
+      const atributos=[...(p.atributosDeseados||[]), p.atributosOtro].filter(Boolean).join(', ');
+      t+='   ▸ Opinión '+(i+1)+':\n';
+      t+='      • Tipo de vino preferido: '+(p.tipoVinoPreferido||'-')+'\n';
+      t+='      • ¿Conocía la marca?: '+(p.conoceMarca||'-')+'\n';
+      t+='      • ¿La ha probado?: '+(p.usoMarca||'-')+'\n';
+      t+='      • Opinión sobre los vinos: '+(op?op.e+' '+op.l:'-')+'\n';
+      if(atributos) t+='      • Le gustaría ver: '+atributos+'\n';
+      t+='      • Percepción tras la degustación: '+(pm?pm.e+' '+pm.v:'-')+'\n';
+      if(p.productoComentado) t+='      • Vino: '+p.productoComentado+'\n';
+      if(p.mejoraria) t+='      • Mejoraría: '+p.mejoraria+'\n';
+      if(p.edad) t+='      • Edad aprox.: '+p.edad+'\n';
+    });
+  }
+  if(obsequioR==='Si'&&obsequiosList.length){ t+='\n🎁 *OBSEQUIOS*\n'; obsequiosList.forEach(p=>{ t+='   • '+(p.tipo==='Otro'?p.otroTexto:p.tipo)+'  _x'+(p.cantidad||0)+'_\n'; }); }
+  if(es||ti){ t+='\n🍾 *ACTIVACIÓN DE BOTELLAS*\n   • Espumante entregada: '+(es||'-')+'\n   • Tinto entregada: '+(ti||'-')+'\n   • Impactos: '+(val('impactos')||'-')+'\n'; }
+  if(val('proximaVisita')) t+='\n📅 Próxima visita: '+val('proximaVisita')+'\n';
+  if(val('observacionesGenerales')) t+='📝 '+val('observacionesGenerales')+'\n';
+  t+='\n_Enviado desde Meico Vinos · Synaptic_';
+  return t;
+}
+function compartirWhatsApp(){ window.open('https://wa.me/?text='+encodeURIComponent(generarTextoGestion()),'_blank'); }
+function copiarGestion(){
+  const t=generarTextoGestion();
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(()=>toast('Copiado al portapapeles')).catch(()=>fallbackCopy(t)); }
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){ const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); try{ document.execCommand('copy'); toast('Copiado al portapapeles'); }catch(e){ prompt('Copia manual:', t); } document.body.removeChild(ta); }
+function nuevaGestion(){ limpiarSesionLocal(); location.reload(); }
+
+// ===== UTILIDADES =====
+function val(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function uid(pfx){ return pfx+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6); }
+function escAttr(s){ return String(s==null?'':s).replace(/"/g,'&quot;'); }
+function escHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>
