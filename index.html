@@ -310,7 +310,11 @@
       <div class="asesor-chip" id="asesorChip"><svg class="icon icon-sm"><use href="#i-id"/></svg><span id="asesorChipTexto">—</span></div>
 
       <div class="pselect"><span class="pic"><svg class="icon"><use href="#i-pin"/></svg></span>
-        <select id="puntoVenta" onchange="onPdvChange()"><option value="">Selecciona el punto de venta</option></select>
+        <select id="ciudad" onchange="onCiudadChange()"><option value="">Selecciona la ciudad</option></select>
+      </div>
+      <input type="text" id="ciudadTexto" class="input" placeholder="Escribe la ciudad" style="display:none;margin-bottom:13px;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);color:#fff">
+      <div class="pselect"><span class="pic"><svg class="icon"><use href="#i-pin"/></svg></span>
+        <select id="puntoVenta" onchange="onPdvChange()" disabled><option value="">Elige primero la ciudad</option></select>
       </div>
       <input type="text" id="pdvTexto" class="input" placeholder="Escribe el punto de venta" style="display:none;margin-bottom:13px;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff">
 
@@ -363,7 +367,7 @@
       </div>
       <div class="merc-chip">
         <div class="merc-ava"><svg class="icon icon-lg"><use href="#i-pin"/></svg></div>
-        <div class="merc-info"><b id="mercPdv">—</b><span>Punto de venta</span></div>
+        <div class="merc-info"><b id="mercPdv">—</b><span id="mercCiudad">Punto de venta</span></div>
       </div>
       <div class="field">
         <label class="label label-req">Ubicación GPS</label>
@@ -573,6 +577,7 @@
     <div class="res-line"><span class="rk">Nombre</span><span class="rv" id="pNombre">—</span></div>
     <div class="res-line"><span class="rk">Documento</span><span class="rv" id="pDoc">—</span></div>
     <div class="res-line"><span class="rk">Teléfono</span><span class="rv" id="pTel">—</span></div>
+    <div class="res-line"><span class="rk">Ciudad</span><span class="rv" id="pCiudad">—</span></div>
     <div class="merc-chip" style="margin:16px 0"><div class="merc-ava"><svg class="icon"><use href="#i-pin"/></svg></div><div class="merc-info"><b>Punto de venta</b><span id="pPdvActual">—</span></div><button type="button" class="btn btn-outline btn-sm" onclick="cerrarPersona();reabrirPortada()"><svg class="icon icon-sm"><use href="#i-edit"/></svg>Cambiar</button></div>
     <div class="merc-chip" style="margin:0"><div class="merc-ava"><svg class="icon"><use href="#i-id"/></svg></div><div class="merc-info"><b>Código de sesión</b><span id="pCodigoSesion">—</span></div><button type="button" class="btn btn-outline btn-sm" onclick="copiarCodigoSesion()"><svg class="icon icon-sm"><use href="#i-copy"/></svg>Copiar</button></div>
   </div>
@@ -617,7 +622,7 @@
 
 <script>
 /* ==== CONFIGURA ESTO DESPUÉS DE DESPLEGAR EL APPS SCRIPT (ver README) ==== */
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzucn50Mn6oaxqixFrn39VY0vkxOUw1_LwQXWzvqnAb7DpisMjKCbKn3BcZ-oXJOISK2Q/exec';
+const GAS_URL = 'PEGA_AQUI_LA_URL_/exec_DE_TU_WEB_APP_DE_APPS_SCRIPT';
 const LS_KEY = 'meicovinos_session_v1';
 const LS_FOTOS = 'meicovinos_fotos_v1';
 const SESION_MAX_MS = 6 * 60 * 60 * 1000;
@@ -644,7 +649,7 @@ const EDADES = ['18-25','26-35','36-45','46-55','56+'];
 const TIPOS_NOVEDAD = ['Competencia','Degustación de la competencia','Descuento / Promoción','Otro'];
 const TIPOS_OBSEQUIO = ['Descorchador','Otro'];
 
-let parametrizacion = { pdvs:[], usuarios:[], skus:[], degustaciones:[] };
+let parametrizacion = { pdvs:[], pdvCiudad:{}, pdvsPorCiudad:{}, usuarios:[], skus:[], degustaciones:[] };
 let modoManual = false;
 let registroId = '';
 let saved = {};
@@ -654,7 +659,7 @@ let ubicacion = { lat:null, lng:null, acc:null };
 let fotoIngreso = '', fotoIngresoURL = '';
 let ventasList = [], degustacionesList = [], novedadesList = [], vozList = [], obsequiosList = [];
 let asesorSel = { nombre:'', documento:'', telefono:'' };
-let pendAsesorNombre = null, pendPDV = null;
+let pendAsesorNombre = null, pendPDV = null, pendCiudad = null;
 let registroPromise = null;
 
 // ===== INIT =====
@@ -719,10 +724,11 @@ function closeModGrid(){ modgridOpen=false; document.getElementById('modgrid').c
 function onIdentChange(){
   const n=getAsesorNombre();
   document.getElementById('heroGreet').textContent = n ? ('Hola, '+n.split(' ')[0]) : 'Hola';
-  const mn=document.getElementById('mercNombre'), md=document.getElementById('mercDoc'), mp=document.getElementById('mercPdv');
+  const mn=document.getElementById('mercNombre'), md=document.getElementById('mercDoc'), mp=document.getElementById('mercPdv'), mc=document.getElementById('mercCiudad');
   if(mn) mn.textContent = n || '—';
   if(md) md.textContent = getAsesorDocumento() ? ('Documento '+getAsesorDocumento()) : '—';
   if(mp) mp.textContent = getPDV() || '—';
+  if(mc) mc.textContent = getCiudad() ? ('Ciudad: '+getCiudad()) : 'Punto de venta';
 }
 
 // ===== PORTADA =====
@@ -808,11 +814,12 @@ function aplicarGestionRemota(registroIdRecuperado, g){
   restaurando=true;
   registroId=registroIdRecuperado;
   asesorSel={nombre:g.asesorNombre||'',documento:g.asesorDocumento||'',telefono:g.asesorTelefono||''};
-  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||'';
+  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||''; pendCiudad=g.ciudad||'';
   if(modoManual){
     document.getElementById('asesorNombreTexto').value=asesorSel.nombre;
     document.getElementById('asesorDocumentoTexto').value=asesorSel.documento;
     document.getElementById('asesorTelefonoTexto').value=asesorSel.telefono;
+    document.getElementById('ciudadTexto').value=pendCiudad;
     document.getElementById('pdvTexto').value=pendPDV;
   } else { aplicarPendAsesorPDV(); }
   setRadio('ventaRealizada', g.ventaRealizada); onVentaChange();
@@ -855,31 +862,47 @@ function onAsesorChange(){
   onIdentChange();
 }
 function onPdvChange(){ onIdentChange(); }
+function onCiudadChange(){ cargarPDVsPorCiudad(getCiudad()); onIdentChange(); }
 function activarModoSelect(){
   document.getElementById('asesorNombre').style.display='';
+  document.getElementById('ciudad').style.display='';
   document.getElementById('puntoVenta').style.display='';
   document.getElementById('identManual').style.display='none';
+  document.getElementById('ciudadTexto').style.display='none';
   document.getElementById('pdvTexto').style.display='none';
 }
 function activarModoManual(msg){
   modoManual=true;
   document.getElementById('asesorNombre').style.display='none';
+  document.getElementById('ciudad').style.display='none';
   document.getElementById('puntoVenta').style.display='none';
   document.getElementById('asesorChip').classList.remove('show');
   document.getElementById('identManual').style.display='block';
+  document.getElementById('ciudadTexto').style.display='';
   document.getElementById('pdvTexto').style.display='';
   document.getElementById('alertParamMsg').textContent=msg;
   document.getElementById('alertParam').style.display='flex';
+  if(pendCiudad!=null) document.getElementById('ciudadTexto').value=pendCiudad;
   if(pendPDV!=null) document.getElementById('pdvTexto').value=pendPDV;
 }
 function ocultarAlertaParam(){ document.getElementById('alertParam').style.display='none'; }
 function getAsesorNombre(){ return modoManual?val('asesorNombreTexto'):document.getElementById('asesorNombre').value.trim(); }
 function getAsesorDocumento(){ return modoManual?val('asesorDocumentoTexto'):(asesorSel.documento||''); }
 function getAsesorTelefono(){ return modoManual?val('asesorTelefonoTexto'):(asesorSel.telefono||''); }
+function getCiudad(){ return modoManual?val('ciudadTexto'):document.getElementById('ciudad').value.trim(); }
 function getPDV(){ return modoManual?val('pdvTexto'):document.getElementById('puntoVenta').value.trim(); }
 function aplicarPendAsesorPDV(){
   if(pendAsesorNombre){ const s=document.getElementById('asesorNombre'); if(s && s.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(pendAsesorNombre):pendAsesorNombre)+'"]')){ s.value=pendAsesorNombre; onAsesorChange(); } }
-  if(pendPDV){ const s=document.getElementById('puntoVenta'); if(s && s.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(pendPDV):pendPDV)+'"]')){ s.value=pendPDV; onPdvChange(); } }
+  const ciudadObjetivo = pendCiudad || (pendPDV ? (parametrizacion.pdvCiudad||{})[pendPDV] : '') || '';
+  if(ciudadObjetivo){
+    const cs=document.getElementById('ciudad');
+    if(cs && cs.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(ciudadObjetivo):ciudadObjetivo)+'"]')){
+      cs.value=ciudadObjetivo;
+      cargarPDVsPorCiudad(ciudadObjetivo);
+    }
+  }
+  if(pendPDV){ const s=document.getElementById('puntoVenta'); if(s && s.querySelector('option[value="'+(window.CSS&&CSS.escape?CSS.escape(pendPDV):pendPDV)+'"]')){ s.value=pendPDV; } }
+  onIdentChange();
 }
 
 // ===== UBICACIÓN GPS =====
@@ -913,7 +936,7 @@ async function cargarParametrizacion(){
     const data=await res.json();
     if(data&&data.success&&Array.isArray(data.pdvs)&&data.pdvs.length>0){
       parametrizacion=data; modoManual=false; activarModoSelect();
-      cargarAsesores(); cargarPDVs(); poblarProductos(); aplicarPendAsesorPDV();
+      cargarAsesores(); cargarCiudades(); poblarProductos(); aplicarPendAsesorPDV();
     } else activarModoManual((data&&data.error)?data.error:'La hoja respondió sin puntos de venta. Revisa la hoja "PDV".');
   }catch(err){ activarModoManual('No hay conexión con el servidor. ('+err.message+')'); }
 }
@@ -922,10 +945,20 @@ function cargarAsesores(){
   s.innerHTML='<option value="">Selecciona tu nombre</option>'+(parametrizacion.usuarios||[]).slice().sort((a,b)=>a.nombre.localeCompare(b.nombre,'es')).map(u=>'<option value="'+escAttr(u.nombre)+'">'+escHtml(u.nombre)+'</option>').join('');
   if(actual) s.value=actual;
 }
-function cargarPDVs(){
+function cargarCiudades(){
+  const s=document.getElementById('ciudad'); const actual=s.value;
+  const ciudades=Object.keys(parametrizacion.pdvsPorCiudad||{}).sort((a,b)=>a.localeCompare(b,'es'));
+  s.innerHTML='<option value="">Selecciona la ciudad</option>'+ciudades.map(c=>'<option value="'+escAttr(c)+'">'+escHtml(c)+'</option>').join('');
+  if(actual && ciudades.indexOf(actual)!==-1) s.value=actual;
+  cargarPDVsPorCiudad(s.value);
+}
+function cargarPDVsPorCiudad(ciudad){
   const s=document.getElementById('puntoVenta'); const actual=s.value;
-  s.innerHTML='<option value="">Selecciona el punto de venta</option>'+(parametrizacion.pdvs||[]).slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'">'+escHtml(p)+'</option>').join('');
-  if(actual) s.value=actual;
+  if(!ciudad){ s.innerHTML='<option value="">Elige primero la ciudad</option>'; s.disabled=true; return; }
+  const lista=(parametrizacion.pdvsPorCiudad||{})[ciudad]||[];
+  s.disabled=false;
+  s.innerHTML='<option value="">Selecciona el punto de venta</option>'+lista.slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'">'+escHtml(p)+'</option>').join('');
+  if(actual && lista.indexOf(actual)!==-1) s.value=actual;
 }
 function poblarProductos(){ renderVentas(); renderDegustaciones(); }
 
@@ -1118,6 +1151,7 @@ function abrirPersona(){
   document.getElementById('pNombre').textContent = getAsesorNombre() || '—';
   document.getElementById('pDoc').textContent = getAsesorDocumento() || '—';
   document.getElementById('pTel').textContent = getAsesorTelefono() || '—';
+  document.getElementById('pCiudad').textContent = getCiudad() || '—';
   document.getElementById('pPdvActual').textContent = getPDV() || '—';
   document.getElementById('pCodigoSesion').textContent = registroId || 'Aún no generado';
   document.getElementById('personaModal').classList.add('show');
@@ -1144,11 +1178,12 @@ function restaurarSesion(){
   restaurando=true;
   const g=d.campos;
   asesorSel=d.asesorSel||{nombre:'',documento:'',telefono:''};
-  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||'';
+  pendAsesorNombre=g.asesorNombre||''; pendPDV=g.puntoVenta||''; pendCiudad=g.ciudad||'';
   if(modoManual){
     document.getElementById('asesorNombreTexto').value=asesorSel.nombre;
     document.getElementById('asesorDocumentoTexto').value=asesorSel.documento;
     document.getElementById('asesorTelefonoTexto').value=asesorSel.telefono;
+    document.getElementById('ciudadTexto').value=pendCiudad;
     document.getElementById('pdvTexto').value=pendPDV;
   } else { aplicarPendAsesorPDV(); }
   setRadio('ventaRealizada', g.ventaRealizada); onVentaChange();
@@ -1187,6 +1222,7 @@ function validarModulo(id){
   if(id==='ingreso'){
     if(!getAsesorNombre()) e.push('Asesor');
     if(!getAsesorDocumento()) e.push('Documento del asesor');
+    if(!getCiudad()) e.push('Ciudad');
     if(!getPDV()) e.push('Punto de venta');
     if(!ubicacion.lat || !ubicacion.lng) e.push('Ubicación GPS');
     if(!(fotoIngreso||fotoIngresoURL)) e.push('Foto de ingreso (obligatoria)');
@@ -1248,7 +1284,7 @@ function recolectarGestion(){
   return {
     registroId: registroId,
     asesorNombre: getAsesorNombre(), asesorDocumento: getAsesorDocumento(), asesorTelefono: getAsesorTelefono(),
-    puntoVenta: getPDV(),
+    puntoVenta: getPDV(), ciudad: getCiudad(),
     latitud: ubicacion.lat||'', longitud: ubicacion.lng||'', precisionGPS: ubicacion.acc||'',
     fotoIngreso: fotoIngreso, fotoIngresoURL: fotoIngresoURL,
     ventaRealizada: (document.querySelector('input[name="ventaRealizada"]:checked')||{}).value||'',
@@ -1313,7 +1349,7 @@ function renderResumen(){
 
   let h='';
   h+=sec('i-user','Asesor',[ ln('Nombre',escHtml(getAsesorNombre())||'—'), ln('Documento',escHtml(getAsesorDocumento())||'—'), ln('Teléfono',escHtml(getAsesorTelefono())||'—'), ln('Código de sesión',escHtml(registroId)||'—') ]);
-  h+=sec('i-pin','Punto de venta',[ ln('PDV',escHtml(getPDV())||'—'), ln('Ubicación',ubic), ln('Foto de ingreso',(fotoIngreso||fotoIngresoURL)?(fotoIngresoURL?'<a href="'+fotoIngresoURL+'" target="_blank">Ver foto</a>':'Tomada ✓'):'—') ]);
+  h+=sec('i-pin','Punto de venta',[ ln('Ciudad',escHtml(getCiudad())||'—'), ln('PDV',escHtml(getPDV())||'—'), ln('Ubicación',ubic), ln('Foto de ingreso',(fotoIngreso||fotoIngresoURL)?(fotoIngresoURL?'<a href="'+fotoIngresoURL+'" target="_blank">Ver foto</a>':'Tomada ✓'):'—') ]);
 
   let vH='<div class="res-line"><span class="rk">¿Se realizó venta?</span><span class="rv">'+(ventaR||'—')+'</span></div>';
   if(ventaR==='No') vH+='<div class="res-line"><span class="rk">Motivo</span><span class="rv">'+(escHtml(val('ventaMotivoNo'))||'—')+'</span></div>';
@@ -1379,6 +1415,7 @@ function generarTextoGestion(){
   t+='🪪 Doc '+(getAsesorDocumento()||'-')+'\n';
   if(getAsesorTelefono()) t+='📞 '+getAsesorTelefono()+'\n';
   t+='🔑 Código de sesión: '+(registroId||'-')+'\n';
+  t+='🏙️ '+(getCiudad()||'-')+'\n';
   t+='📍 '+(getPDV()||'-')+'\n';
   if(ubicacion.lat&&ubicacion.lng) t+='🗺️ https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'\n';
   t+='\n🛒 *VENTAS:* '+(ventaR||'-')+'\n';
