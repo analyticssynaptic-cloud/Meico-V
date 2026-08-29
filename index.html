@@ -46,6 +46,10 @@
   .saved-badge{display:none;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--success);background:var(--success-soft);padding:5px 9px;border-radius:20px}
   .saved-badge.on{display:inline-flex}
   .lock-note{display:flex;align-items:center;gap:9px;padding:11px 13px;background:var(--warn-soft);color:#8a5a0d;border-radius:var(--r-md);font-size:12.5px;margin-bottom:16px}
+  .info-banner{display:flex;flex-direction:column;gap:9px;padding:12px 13px;background:var(--vino-soft);color:var(--vino-deep);border-radius:var(--r-md);margin-bottom:16px}
+  .info-banner-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+  .info-banner-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .info-chip{background:#fff;color:var(--vino-deep);border:1.5px solid var(--line-strong);border-radius:20px;padding:6px 12px;font-size:12.5px;font-weight:600}
 
   /* FIELDS */
   .field{margin-bottom:15px}.field:last-child{margin-bottom:0}
@@ -427,6 +431,10 @@
         <div class="card-head-text"><div class="card-title">Degustaciones</div><div class="card-sub">Muestras servidas en el PDV</div></div>
         <span class="saved-badge" id="badge-degustaciones"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
       </div>
+      <div class="info-banner" id="bannerProductosFoco" style="display:none">
+        <div class="info-banner-title"><svg class="icon icon-sm"><use href="#i-wine"/></svg>Vinos foco de esta degustación</div>
+        <div class="info-banner-chips" id="bannerProductosFocoChips"></div>
+      </div>
       <div class="field"><label class="label label-req">¿Se realizaron degustaciones?</label>
         <div class="opt-grid opt-grid-2">
           <div class="opt"><input type="radio" name="degustacionRealizada" id="drSi" value="Si"><label for="drSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
@@ -441,6 +449,12 @@
       <div id="degustacionSi" style="display:none">
         <div id="listaDegustaciones"></div>
         <button type="button" class="btn btn-soft btn-block" onclick="agregarDegustacion()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar degustación</button>
+        <div class="field" style="margin-top:16px"><label class="label label-req" for="degustacionImpactos">Impactos generados (personas alcanzadas)</label>
+          <input type="number" id="degustacionImpactos" class="input" min="0" placeholder="Ej: 25">
+        </div>
+        <div class="field" style="margin-bottom:0"><label class="label" for="degustacionObservaciones">Observaciones de la degustación</label>
+          <textarea id="degustacionObservaciones" class="textarea" placeholder="Notas sobre la degustación o activación"></textarea>
+        </div>
       </div>
       <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('degustaciones')"><svg class="icon"><use href="#i-save"/></svg>Guardar Degustaciones</button></div>
     </div>
@@ -501,36 +515,6 @@
         <button type="button" class="btn btn-soft btn-block" onclick="agregarObsequio()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Agregar obsequio</button>
       </div>
       <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('obsequios')"><svg class="icon"><use href="#i-save"/></svg>Guardar Obsequios</button></div>
-    </div>
-  </section>
-
-  <!-- ACTIVACIÓN DE BOTELLAS -->
-  <section class="mod" data-mod="activacion">
-    <div class="card">
-      <div class="card-head">
-        <div class="card-chip"><svg class="icon icon-lg"><use href="#i-bottle"/></svg></div>
-        <div class="card-head-text"><div class="card-title">Activación de Botellas</div><div class="card-sub">2 botellas x punto: espumante y tinto</div></div>
-        <span class="saved-badge" id="badge-activacion"><svg class="icon icon-sm"><use href="#i-check"/></svg>Guardado</span>
-      </div>
-      <div class="field"><label class="label label-req">¿Se entregó la botella espumante del punto?</label>
-        <div class="opt-grid opt-grid-2">
-          <div class="opt"><input type="radio" name="espumanteEntregada" id="esSi" value="Si"><label for="esSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
-          <div class="opt"><input type="radio" name="espumanteEntregada" id="esNo" value="No"><label for="esNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="label label-req">¿Se entregó la botella tinta del punto?</label>
-        <div class="opt-grid opt-grid-2">
-          <div class="opt"><input type="radio" name="tintoEntregada" id="tiSi" value="Si"><label for="tiSi"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>Sí</label></div>
-          <div class="opt"><input type="radio" name="tintoEntregada" id="tiNo" value="No"><label for="tiNo"><svg class="icon icon-sm chk"><use href="#i-check"/></svg>No</label></div>
-        </div>
-      </div>
-      <div class="field"><label class="label label-req" for="impactos">Impactos generados (personas alcanzadas)</label>
-        <input type="number" id="impactos" class="input" min="0" placeholder="Ej: 25">
-      </div>
-      <div class="field" style="margin-bottom:0"><label class="label" for="observacionesActivacion">Observaciones de la activación</label>
-        <textarea id="observacionesActivacion" class="textarea" placeholder="Notas sobre la entrega de botellas o la activación"></textarea>
-      </div>
-      <div class="save-row"><button class="btn btn-primary btn-block" onclick="guardarModulo('activacion')"><svg class="icon"><use href="#i-save"/></svg>Guardar Activación</button></div>
     </div>
   </section>
 
@@ -634,7 +618,6 @@ const MODS = [
   {id:'novedades',    icon:'i-alert',  label:'Novedades',  gate:true},
   {id:'voz',          icon:'i-chat',   label:'Voz Cons.',  gate:true},
   {id:'obsequios',    icon:'i-box',    label:'Obsequios',  gate:true},
-  {id:'activacion',   icon:'i-bottle', label:'Activación', gate:true},
   {id:'salida',       icon:'i-list',   label:'Salida',     gate:true}
 ];
 
@@ -828,10 +811,8 @@ function aplicarGestionRemota(registroIdRecuperado, g){
   if(g.degustacionMotivoNo!=null){ const el=document.getElementById('degustacionMotivoNo'); if(el) el.value=g.degustacionMotivoNo; }
   setRadio('novedadObservada', g.novedadObservada); onNovedadChange();
   setRadio('obsequioEntregado', g.obsequioEntregado); onObsequioChange();
-  setRadio('espumanteEntregada', (g.activacion||{}).espumanteEntregada);
-  setRadio('tintoEntregada', (g.activacion||{}).tintoEntregada);
-  document.getElementById('impactos').value=(g.activacion||{}).impactos!=null?(g.activacion||{}).impactos:'';
-  document.getElementById('observacionesActivacion').value=(g.activacion||{}).observaciones||'';
+  document.getElementById('degustacionImpactos').value=g.degustacionImpactos!=null?g.degustacionImpactos:'';
+  document.getElementById('degustacionObservaciones').value=g.degustacionObservaciones||'';
   const darId=list=>(list||[]).map(it=>Object.assign({id:uid('r')},it));
   ventasList=darId(g.ventaProductos); degustacionesList=darId(g.degustacionProductos); novedadesList=darId(g.novedades); vozList=darId(g.vozConsumidor); obsequiosList=darId(g.obsequios);
   renderVentas(); renderDegustaciones(); renderNovedades(); renderVoz(); renderObsequios();
@@ -960,7 +941,15 @@ function cargarPDVsPorCiudad(ciudad){
   s.innerHTML='<option value="">Selecciona el punto de venta</option>'+lista.slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'">'+escHtml(p)+'</option>').join('');
   if(actual && lista.indexOf(actual)!==-1) s.value=actual;
 }
-function poblarProductos(){ renderVentas(); renderDegustaciones(); }
+function poblarProductos(){ renderVentas(); renderDegustaciones(); actualizarBannerFoco(); }
+function actualizarBannerFoco(){
+  const banner=document.getElementById('bannerProductosFoco'), chips=document.getElementById('bannerProductosFocoChips');
+  const lista=parametrizacion.degustaciones||[];
+  if(!banner||!chips) return;
+  if(lista.length===0){ banner.style.display='none'; return; }
+  chips.innerHTML=lista.map(p=>'<span class="info-chip">'+escHtml(p)+'</span>').join('');
+  banner.style.display='flex';
+}
 
 // ===== SELECT SIMPLE DE PRODUCTO (SKU o Degustación) =====
 function opcionesProducto(lista, seleccionado){
@@ -996,7 +985,7 @@ function renderDegustaciones(){
   degustacionesList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
     <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-wine"/></svg>Degustación ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarDegustacion('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
     ${campoProducto(p, parametrizacion.degustaciones, 'setProductoDegustacion')}
-    <div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">Cantidad servida</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
+    <div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">Botellas utilizadas</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
 }
 function onDegustacionChange(){ const v=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value; document.getElementById('degustacionNo').style.display=v==='No'?'block':'none'; document.getElementById('degustacionSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&degustacionesList.length===0&&!restaurando) agregarDegustacion(); }
 
@@ -1192,10 +1181,8 @@ function restaurarSesion(){
   if(g.degustacionMotivoNo!=null){ const el=document.getElementById('degustacionMotivoNo'); if(el) el.value=g.degustacionMotivoNo; }
   setRadio('novedadObservada', g.novedadObservada); onNovedadChange();
   setRadio('obsequioEntregado', g.obsequioEntregado); onObsequioChange();
-  setRadio('espumanteEntregada', (g.activacion||{}).espumanteEntregada);
-  setRadio('tintoEntregada', (g.activacion||{}).tintoEntregada);
-  document.getElementById('impactos').value=(g.activacion||{}).impactos!=null?(g.activacion||{}).impactos:'';
-  document.getElementById('observacionesActivacion').value=(g.activacion||{}).observaciones||'';
+  document.getElementById('degustacionImpactos').value=g.degustacionImpactos!=null?g.degustacionImpactos:'';
+  document.getElementById('degustacionObservaciones').value=g.degustacionObservaciones||'';
   const L=d.listas||{};
   ventasList=L.ventasList||[]; degustacionesList=L.degustacionesList||[]; novedadesList=L.novedadesList||[]; vozList=L.vozList||[]; obsequiosList=L.obsequiosList||[];
   renderVentas(); renderDegustaciones(); renderNovedades(); renderVoz(); renderObsequios();
@@ -1242,7 +1229,8 @@ function validarModulo(id){
     if(v==='No'&&!val('degustacionMotivoNo')) e.push('Motivo de no degustación');
     if(v==='Si'){
       if(degustacionesList.length===0) e.push('Agrega al menos una degustación');
-      degustacionesList.forEach((p,i)=>{ if(!p.producto) e.push('Vino degustado '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad degustada '+(i+1)); });
+      degustacionesList.forEach((p,i)=>{ if(!p.producto) e.push('Vino degustado '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Botellas usadas en degustación '+(i+1)); });
+      if(val('degustacionImpactos')==='') e.push('Impactos generados');
     }
   }
   if(id==='novedades'){
@@ -1271,13 +1259,6 @@ function validarModulo(id){
       obsequiosList.forEach((p,i)=>{ if(!p.tipo) e.push('Tipo de obsequio '+(i+1)); if(p.tipo==='Otro'&&!p.otroTexto) e.push('¿Cuál obsequio? '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad obsequio '+(i+1)); });
     }
   }
-  if(id==='activacion'){
-    const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value;
-    const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value;
-    if(!es) e.push('¿Se entregó la botella espumante?');
-    if(!ti) e.push('¿Se entregó la botella tinta?');
-    if(val('impactos')==='') e.push('Impactos generados');
-  }
   return e;
 }
 function recolectarGestion(){
@@ -1293,17 +1274,12 @@ function recolectarGestion(){
     degustacionRealizada: (document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'',
     degustacionMotivoNo: val('degustacionMotivoNo'),
     degustacionProductos: degustacionesList.map(p=>({producto:p.producto,cantidad:p.cantidad})),
+    degustacionImpactos: val('degustacionImpactos'), degustacionObservaciones: val('degustacionObservaciones'),
     novedadObservada: (document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'',
     novedades: novedadesList.map(p=>({tipo:p.tipo,marca:p.marca,descripcion:p.descripcion})),
     vozConsumidor: vozList.map(p=>({tipoVinoPreferido:p.tipoVinoPreferido,conoceMarca:p.conoceMarca,usoMarca:p.usoMarca,opinionProductos:p.opinionProductos,atributosDeseados:p.atributosDeseados||[],atributosOtro:p.atributosOtro,percepcionDegustacion:p.percepcionDegustacion,mejoraria:p.mejoraria,productoComentado:p.productoComentado,edad:p.edad})),
     obsequioEntregado: (document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'',
     obsequios: obsequiosList.map(p=>({tipo:p.tipo,otroTexto:p.otroTexto,cantidad:p.cantidad})),
-    activacion: {
-      espumanteEntregada: (document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'',
-      tintoEntregada: (document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'',
-      impactos: val('impactos'),
-      observaciones: val('observacionesActivacion')
-    },
     observacionesGenerales: val('observacionesGenerales'), proximaVisita: val('proximaVisita'),
     modulosGuardados: ''
   };
@@ -1343,8 +1319,6 @@ function renderResumen(){
   const degustacionR=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'';
   const novedadR=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'';
   const obsequioR=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'';
-  const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'';
-  const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'';
   const ubic=(ubicacion.lat&&ubicacion.lng)?'<a href="https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'" target="_blank">Abrir en Maps</a> ('+ubicacion.lat+', '+ubicacion.lng+')':'No capturada';
 
   let h='';
@@ -1358,7 +1332,11 @@ function renderResumen(){
 
   let dH='<div class="res-line"><span class="rk">¿Se realizaron degustaciones?</span><span class="rv">'+(degustacionR||'—')+'</span></div>';
   if(degustacionR==='No') dH+='<div class="res-line"><span class="rk">Motivo</span><span class="rv">'+(escHtml(val('degustacionMotivoNo'))||'—')+'</span></div>';
-  if(degustacionR==='Si'){ dH+=(degustacionesList.length?degustacionesList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.producto)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin degustaciones registradas</div>'); }
+  if(degustacionR==='Si'){
+    dH+=(degustacionesList.length?degustacionesList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.producto)||'—')+'</b> · '+(p.cantidad||0)+' botella(s)</div>').join(''):'<div class="res-mini">Sin degustaciones registradas</div>');
+    dH+='<div class="res-line"><span class="rk">Impactos generados</span><span class="rv">'+(val('degustacionImpactos')||'—')+'</span></div>';
+    if(val('degustacionObservaciones')) dH+='<div class="res-mini">Observaciones: '+escHtml(val('degustacionObservaciones'))+'</div>';
+  }
   h+=secRaw('i-wine','Degustaciones',dH);
 
   let noH='<div class="res-line"><span class="rk">¿Novedad observada?</span><span class="rv">'+(novedadR||'—')+'</span></div>';
@@ -1388,11 +1366,6 @@ function renderResumen(){
   if(obsequioR==='Si'){ obH+=(obsequiosList.length?obsequiosList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.tipo==='Otro'?p.otroTexto:p.tipo)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin obsequios registrados</div>'); }
   h+=secRaw('i-box','Obsequios',obH);
 
-  const actH='<div class="res-line"><span class="rk">Botella espumante</span><span class="rv">'+(es||'—')+'</span></div>'+
-    '<div class="res-line"><span class="rk">Botella tinta</span><span class="rv">'+(ti||'—')+'</span></div>'+
-    '<div class="res-line"><span class="rk">Impactos generados</span><span class="rv">'+(val('impactos')||'—')+'</span></div>';
-  h+=secRaw('i-bottle','Activación de Botellas', actH);
-
   h+='<div class="res-sec-h" style="margin-top:4px"><svg class="icon icon-sm"><use href="#i-list"/></svg>Estado de módulos</div>';
   h+=MODS.filter(m=>m.id!=='salida').map(m=>'<div class="mod-state"><div class="ms-ic"><svg class="icon icon-sm"><use href="#'+m.icon+'"/></svg></div><div class="ms-name">'+m.label+'</div><span class="ms-tag '+(saved[m.id]?'ok':'no')+'">'+(saved[m.id]?'Guardado':'Pendiente')+'</span></div>').join('');
   cont.innerHTML=h;
@@ -1407,8 +1380,6 @@ function generarTextoGestion(){
   const degustacionR=(document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'';
   const novedadR=(document.querySelector('input[name="novedadObservada"]:checked')||{}).value||'';
   const obsequioR=(document.querySelector('input[name="obsequioEntregado"]:checked')||{}).value||'';
-  const es=(document.querySelector('input[name="espumanteEntregada"]:checked')||{}).value||'';
-  const ti=(document.querySelector('input[name="tintoEntregada"]:checked')||{}).value||'';
   const linea='━━━━━━━━━━━━━━';
   let t='🍷 *GESTIÓN MEICO VINOS*\n'+linea+'\n';
   t+='👤 *'+(getAsesorNombre()||'-')+'*\n';
@@ -1423,7 +1394,11 @@ function generarTextoGestion(){
   if(ventaR==='Si'){ ventasList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+'_\n'; }); }
   t+='\n🍷 *DEGUSTACIONES:* '+(degustacionR||'-')+'\n';
   if(degustacionR==='No') t+='   ↳ Motivo: '+(val('degustacionMotivoNo')||'-')+'\n';
-  if(degustacionR==='Si'){ degustacionesList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+'_\n'; }); }
+  if(degustacionR==='Si'){
+    degustacionesList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+' botella(s)_\n'; });
+    t+='   • Impactos generados: '+(val('degustacionImpactos')||'-')+'\n';
+    if(val('degustacionObservaciones')) t+='   ↳ '+val('degustacionObservaciones')+'\n';
+  }
   if(novedadR==='Si'&&novedadesList.length){ t+='\n📣 *NOVEDADES DEL PDV*\n'; novedadesList.forEach(p=>{ t+='   • '+(p.tipo||'-')+(p.marca?' · '+p.marca:'')+(p.descripcion?' — '+p.descripcion:'')+'\n'; }); }
   if(vozList.length){
     t+='\n💬 *VOZ DEL CONSUMIDOR*\n';
@@ -1444,7 +1419,6 @@ function generarTextoGestion(){
     });
   }
   if(obsequioR==='Si'&&obsequiosList.length){ t+='\n🎁 *OBSEQUIOS*\n'; obsequiosList.forEach(p=>{ t+='   • '+(p.tipo==='Otro'?p.otroTexto:p.tipo)+'  _x'+(p.cantidad||0)+'_\n'; }); }
-  if(es||ti){ t+='\n🍾 *ACTIVACIÓN DE BOTELLAS*\n   • Espumante entregada: '+(es||'-')+'\n   • Tinto entregada: '+(ti||'-')+'\n   • Impactos: '+(val('impactos')||'-')+'\n'; }
   if(val('proximaVisita')) t+='\n📅 Próxima visita: '+val('proximaVisita')+'\n';
   if(val('observacionesGenerales')) t+='📝 '+val('observacionesGenerales')+'\n';
   t+='\n_Enviado desde Meico Vinos · Synaptic_';
