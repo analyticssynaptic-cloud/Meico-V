@@ -641,6 +641,8 @@ let modgridOpen = false, restaurando = false;
 let ubicacion = { lat:null, lng:null, acc:null };
 let fotoIngreso = '', fotoIngresoURL = '';
 let ventasList = [], degustacionesList = [], novedadesList = [], vozList = [], obsequiosList = [];
+// Valor centinela del select de Ventas para "Otra referencia" (vino fuera de la lista de SKU)
+const OTRA_REF = '__OTRA_REFERENCIA__';
 let asesorSel = { nombre:'', documento:'', telefono:'' };
 let pendAsesorNombre = null, pendPDV = null, pendCiudad = null;
 let registroPromise = null;
@@ -814,7 +816,8 @@ function aplicarGestionRemota(registroIdRecuperado, g){
   document.getElementById('degustacionImpactos').value=g.degustacionImpactos!=null?g.degustacionImpactos:'';
   document.getElementById('degustacionObservaciones').value=g.degustacionObservaciones||'';
   const darId=list=>(list||[]).map(it=>Object.assign({id:uid('r')},it));
-  ventasList=darId(g.ventaProductos); degustacionesList=darId(g.degustacionProductos); novedadesList=darId(g.novedades); vozList=darId(g.vozConsumidor); obsequiosList=darId(g.obsequios);
+  ventasList=darId(g.ventaProductos).map(p=>p.otraReferencia?Object.assign({},p,{producto:OTRA_REF,otroTexto:p.otroTexto||p.producto||''}):p);
+  degustacionesList=darId(g.degustacionProductos); novedadesList=darId(g.novedades); vozList=darId(g.vozConsumidor); obsequiosList=darId(g.obsequios);
   renderVentas(); renderDegustaciones(); renderNovedades(); renderVoz(); renderObsequios();
   fotoIngreso=''; fotoIngresoURL=g.fotoIngresoURL||'';
   if(fotoIngresoURL){ document.getElementById('imgIngreso').src=fotoIngresoURL; document.getElementById('defIngreso').style.display='none'; document.getElementById('prevIngreso').style.display='block'; document.getElementById('uploadIngreso').classList.add('has'); }
@@ -955,22 +958,31 @@ function actualizarBannerFoco(){
 function opcionesProducto(lista, seleccionado){
   return '<option value="">Selecciona el vino</option>'+(lista||[]).slice().sort((a,b)=>a.localeCompare(b,'es')).map(p=>'<option value="'+escAttr(p)+'"'+(p===seleccionado?' selected':'')+'>'+escHtml(p)+'</option>').join('');
 }
-function campoProducto(p, lista, onChangeFn){
-  return '<div class="field" style="margin-bottom:0"><label class="label label-req">Vino</label><select class="select" onchange="'+onChangeFn+'(\''+p.id+'\',this.value)">'+opcionesProducto(lista,p.producto)+'</select></div>';
+function campoProducto(p, lista, onChangeFn, permitirOtro){
+  // permitirOtro: agrega la opcion "Otra referencia" para escribir un vino que no esta en la lista de SKU
+  const extra = permitirOtro ? '<option value="'+OTRA_REF+'"'+(p.producto===OTRA_REF?' selected':'')+'>Otra referencia (escribir)</option>' : '';
+  return '<div class="field" style="margin-bottom:0"><label class="label label-req">Vino</label><select class="select" onchange="'+onChangeFn+'(\''+p.id+'\',this.value)">'+opcionesProducto(lista,p.producto)+extra+'</select></div>';
 }
 function findItem(id){ return ventasList.find(x=>x.id===id) || degustacionesList.find(x=>x.id===id) || obsequiosList.find(x=>x.id===id); }
 function setCantidad(id,v){ const p=findItem(id); if(p) p.cantidad=parseFloat(v)||0; }
 
 // ===== VENTAS =====
-function agregarVenta(){ ventasList.push({id:uid('v'),producto:'',cantidad:1}); renderVentas(); }
+// Si el asesor vendio una referencia que no esta en la lista de SKU, elige "Otra referencia"
+// y escribe el nombre del vino + la cantidad. Se guarda con el nombre escrito y la marca
+// otraReferencia:true, para poder distinguirla en la hoja.
+function agregarVenta(){ ventasList.push({id:uid('v'),producto:'',otroTexto:'',cantidad:1}); renderVentas(); }
 function eliminarVenta(id){ ventasList=ventasList.filter(x=>x.id!==id); renderVentas(); }
-function setProductoVenta(id,v){ const p=ventasList.find(x=>x.id===id); if(p) p.producto=v; }
+function setProductoVenta(id,v){ const p=ventasList.find(x=>x.id===id); if(p){ p.producto=v; if(v!==OTRA_REF) p.otroTexto=''; } renderVentas(); }
+function setVentaOtro(id,v){ const p=ventasList.find(x=>x.id===id); if(p) p.otroTexto=v; }
+function esOtraRefVenta(p){ return p.producto===OTRA_REF; }
+function nombreVenta(p){ return esOtraRefVenta(p) ? (p.otroTexto||'').trim() : (p.producto||''); }
 function renderVentas(){
   const cont=document.getElementById('listaVentas'); if(!cont) return; cont.innerHTML='';
   if(ventasList.length===0){ cont.innerHTML='<div class="empty-hint">Agrega los vinos vendidos.</div>'; return; }
   ventasList.forEach((p,idx)=>{ const d=document.createElement('div'); d.className='item'; d.innerHTML=`
     <div class="item-head"><div class="item-title"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Vendido ${idx+1}</div><button type="button" class="btn btn-danger btn-icon" onclick="eliminarVenta('${p.id}')"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div>
-    ${campoProducto(p, parametrizacion.skus, 'setProductoVenta')}
+    ${campoProducto(p, parametrizacion.skus, 'setProductoVenta', true)}
+    ${esOtraRefVenta(p)?'<div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">¿Qué referencia vendió?</label><input type="text" class="input" placeholder="Escribe el nombre del vino vendido" value="'+escAttr(p.otroTexto||'')+'" oninput="setVentaOtro(\''+p.id+'\',this.value)"></div>':''}
     <div class="field" style="margin-bottom:0;margin-top:11px"><label class="label label-req">Cantidad</label><input type="number" class="input" min="1" value="${p.cantidad}" oninput="setCantidad('${p.id}',this.value)"></div>`; cont.appendChild(d); });
 }
 function onVentaChange(){ const v=(document.querySelector('input[name="ventaRealizada"]:checked')||{}).value; document.getElementById('ventaNo').style.display=v==='No'?'block':'none'; document.getElementById('ventaSi').style.display=v==='Si'?'block':'none'; if(v==='Si'&&ventasList.length===0&&!restaurando) agregarVenta(); }
@@ -1220,7 +1232,7 @@ function validarModulo(id){
     if(v==='No'&&!val('ventaMotivoNo')) e.push('Motivo de no venta');
     if(v==='Si'){
       if(ventasList.length===0) e.push('Agrega al menos un vino vendido');
-      ventasList.forEach((p,i)=>{ if(!p.producto) e.push('Vino vendido '+(i+1)); if(!p.cantidad||p.cantidad<1) e.push('Cantidad vendido '+(i+1)); });
+      ventasList.forEach((p,i)=>{ if(!p.producto) e.push('Vino vendido '+(i+1)); else if(esOtraRefVenta(p)&&!nombreVenta(p)) e.push('¿Qué referencia vendió? (vendido '+(i+1)+')'); if(!p.cantidad||p.cantidad<1) e.push('Cantidad vendido '+(i+1)); });
     }
   }
   if(id==='degustaciones'){
@@ -1270,7 +1282,7 @@ function recolectarGestion(){
     fotoIngreso: fotoIngreso, fotoIngresoURL: fotoIngresoURL,
     ventaRealizada: (document.querySelector('input[name="ventaRealizada"]:checked')||{}).value||'',
     ventaMotivoNo: val('ventaMotivoNo'),
-    ventaProductos: ventasList.map(p=>({producto:p.producto,cantidad:p.cantidad})),
+    ventaProductos: ventasList.map(p=>({producto:nombreVenta(p),cantidad:p.cantidad,otraReferencia:esOtraRefVenta(p)})),
     degustacionRealizada: (document.querySelector('input[name="degustacionRealizada"]:checked')||{}).value||'',
     degustacionMotivoNo: val('degustacionMotivoNo'),
     degustacionProductos: degustacionesList.map(p=>({producto:p.producto,cantidad:p.cantidad})),
@@ -1327,7 +1339,7 @@ function renderResumen(){
 
   let vH='<div class="res-line"><span class="rk">¿Se realizó venta?</span><span class="rv">'+(ventaR||'—')+'</span></div>';
   if(ventaR==='No') vH+='<div class="res-line"><span class="rk">Motivo</span><span class="rv">'+(escHtml(val('ventaMotivoNo'))||'—')+'</span></div>';
-  if(ventaR==='Si'){ vH+=(ventasList.length?ventasList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(p.producto)||'—')+'</b> · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin vinos vendidos</div>'); }
+  if(ventaR==='Si'){ vH+=(ventasList.length?ventasList.map((p,i)=>'<div class="res-mini">'+(i+1)+'. <b>'+(escHtml(nombreVenta(p))||'—')+'</b>'+(esOtraRefVenta(p)?' <i>(otra referencia)</i>':'')+' · '+(p.cantidad||0)+' und</div>').join(''):'<div class="res-mini">Sin vinos vendidos</div>'); }
   h+=secRaw('i-cart','Ventas',vH);
 
   let dH='<div class="res-line"><span class="rk">¿Se realizaron degustaciones?</span><span class="rv">'+(degustacionR||'—')+'</span></div>';
@@ -1391,7 +1403,7 @@ function generarTextoGestion(){
   if(ubicacion.lat&&ubicacion.lng) t+='🗺️ https://www.google.com/maps?q='+ubicacion.lat+','+ubicacion.lng+'\n';
   t+='\n🛒 *VENTAS:* '+(ventaR||'-')+'\n';
   if(ventaR==='No') t+='   ↳ Motivo: '+(val('ventaMotivoNo')||'-')+'\n';
-  if(ventaR==='Si'){ ventasList.forEach(p=>{ t+='   • '+(p.producto||'-')+'  _x'+(p.cantidad||0)+'_\n'; }); }
+  if(ventaR==='Si'){ ventasList.forEach(p=>{ t+='   • '+(nombreVenta(p)||'-')+(esOtraRefVenta(p)?' (otra referencia)':'')+'  _x'+(p.cantidad||0)+'_\n'; }); }
   t+='\n🍷 *DEGUSTACIONES:* '+(degustacionR||'-')+'\n';
   if(degustacionR==='No') t+='   ↳ Motivo: '+(val('degustacionMotivoNo')||'-')+'\n';
   if(degustacionR==='Si'){
